@@ -1,0 +1,2579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispute Command Center</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --gold: #C9A84C;
+    --gold-bright: #E8C564;
+    --gold-dim: #7A621E;
+    --gold-faint: rgba(201,168,76,0.08);
+    --gold-border: rgba(201,168,76,0.25);
+    --black: #0A0A0A;
+    --surface: #111111;
+    --surface2: #181818;
+    --surface3: #222222;
+    --text: #E8E0D0;
+    --text-dim: #8A7F6E;
+    --text-muted: #4A4035;
+    --red: #C0392B;
+    --red-faint: rgba(192,57,43,0.12);
+    --green: #27AE60;
+    --green-faint: rgba(39,174,96,0.12);
+    --blue: #2980B9;
+    --orange: #E67E22;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .app-header {
+    border-bottom: 1px solid var(--gold-border);
+    background: linear-gradient(180deg, #0F0F0F 0%, var(--black) 100%);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-brand .logo-mark {
+    width: 34px;
+    height: 34px;
+    background: var(--gold);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--black);
+  }
+
+  .header-brand .app-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.5px;
+  }
+
+  .header-brand .app-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .compliance-badge {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    border: 1px solid var(--gold-border);
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* LAYOUT */
+  .app-body {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 60px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    border-right: 1px solid var(--gold-border);
+    background: var(--surface);
+    padding: 24px 0;
+  }
+
+  .sidebar-section {
+    padding: 0 20px;
+    margin-bottom: 28px;
+  }
+
+  .sidebar-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover {
+    background: var(--gold-faint);
+    color: var(--text);
+    border-color: var(--gold-border);
+  }
+
+  .nav-item.active {
+    background: var(--gold-faint);
+    color: var(--gold);
+    border-color: var(--gold-border);
+  }
+
+  .nav-item .nav-icon {
+    width: 18px;
+    text-align: center;
+    font-size: 15px;
+  }
+
+  .nav-item .nav-badge {
+    margin-left: auto;
+    background: var(--gold);
+    color: var(--black);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* MAIN CONTENT */
+  .main-content {
+    padding: 32px;
+    overflow-y: auto;
+  }
+
+  /* PAGE SECTIONS */
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+
+  /* PAGE HEADER */
+  .page-header {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--gold-border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .page-sub {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  /* API KEY BANNER */
+  .api-banner {
+    background: var(--red-faint);
+    border: 1px solid rgba(192,57,43,0.3);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  .api-banner.hidden { display: none; }
+  .api-banner.ok { background: var(--green-faint); border-color: rgba(39,174,96,0.3); }
+
+  .api-key-input-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface2);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gold);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* INPUTS */
+  input, textarea, select {
+    background: var(--surface3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    color: var(--text);
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    width: 100%;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--gold);
+  }
+
+  textarea { resize: vertical; min-height: 100px; }
+
+  .field-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .field-group {
+    margin-bottom: 16px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .field-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--black);
+  }
+
+  .btn-primary:hover { background: var(--gold-bright); }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--gold-border);
+    color: var(--gold);
+  }
+
+  .btn-ghost:hover {
+    background: var(--gold-faint);
+    border-color: var(--gold);
+  }
+
+  .btn-danger {
+    background: var(--red-faint);
+    border: 1px solid rgba(192,57,43,0.4);
+    color: #E74C3C;
+  }
+
+  .btn-sm { padding: 6px 14px; font-size: 12px; }
+  .btn-lg { padding: 14px 28px; font-size: 15px; }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* DROP ZONE */
+  .drop-zone {
+    border: 2px dashed var(--gold-border);
+    border-radius: var(--radius);
+    padding: 48px 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--gold-faint);
+    position: relative;
+  }
+
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.12);
+  }
+
+  .drop-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: none;
+  }
+
+  .drop-zone-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .drop-zone-text {
+    font-size: 15px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .drop-zone-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* PROGRESS */
+  .progress-track {
+    display: flex;
+    gap: 0;
+    margin-bottom: 28px;
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .progress-step {
+    flex: 1;
+    padding: 12px 16px;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--surface2);
+    text-align: center;
+    border-right: 1px solid var(--gold-border);
+    font-family: 'DM Mono', monospace;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .progress-step:last-child { border-right: none; }
+
+  .progress-step.done {
+    background: var(--green-faint);
+    color: var(--green);
+  }
+
+  .progress-step.active {
+    background: var(--gold-faint);
+    color: var(--gold);
+  }
+
+  .progress-step .step-num {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 2px;
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* ANALYSIS ITEMS */
+  .analysis-item {
+    background: var(--surface2);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+
+  .analysis-item-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+  }
+
+  .analysis-item-header:hover { background: var(--gold-faint); }
+
+  .item-severity {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .item-severity.high { background: var(--red); }
+  .item-severity.medium { background: var(--orange); }
+  .item-severity.low { background: var(--blue); }
+
+  .item-name {
+    font-weight: 600;
+    font-size: 13px;
+    flex: 1;
+  }
+
+  .item-creditor {
+    color: var(--text-dim);
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .item-type-badge {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-family: 'DM Mono', monospace;
+    border: 1px solid;
+  }
+
+  .badge-collection { color: var(--red); border-color: rgba(192,57,43,0.4); background: var(--red-faint); }
+  .badge-late { color: var(--orange); border-color: rgba(230,126,34,0.4); background: rgba(230,126,34,0.1); }
+  .badge-charge-off { color: #8E44AD; border-color: rgba(142,68,173,0.4); background: rgba(142,68,173,0.1); }
+  .badge-inquiry { color: var(--blue); border-color: rgba(41,128,185,0.4); background: rgba(41,128,185,0.1); }
+  .badge-judgment { color: var(--red); border-color: rgba(192,57,43,0.4); background: var(--red-faint); }
+  .badge-bankruptcy { color: var(--red); border-color: rgba(192,57,43,0.4); background: var(--red-faint); }
+  .badge-other { color: var(--text-dim); border-color: rgba(255,255,255,0.1); background: transparent; }
+
+  .item-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--gold);
+    cursor: pointer;
+  }
+
+  .item-detail {
+    display: none;
+    padding: 0 18px 18px;
+    border-top: 1px solid var(--gold-border);
+    margin-top: 0;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .item-detail.open { display: block; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 14px;
+    margin-bottom: 14px;
+  }
+
+  .detail-field { }
+
+  .detail-field-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 4px;
+  }
+
+  .detail-field-value {
+    font-size: 13px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .violation-tag {
+    display: inline-block;
+    margin: 3px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid var(--gold-border);
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* LETTER OUTPUT */
+  .letter-output {
+    background: var(--surface3);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    white-space: pre-wrap;
+    margin-bottom: 16px;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  /* STATUS CHIPS */
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .chip-pending { background: rgba(230,126,34,0.15); color: var(--orange); }
+  .chip-approved { background: var(--green-faint); color: var(--green); }
+  .chip-disputed { background: rgba(41,128,185,0.15); color: var(--blue); }
+  .chip-deleted { background: var(--green-faint); color: var(--green); }
+  .chip-reviewing { background: var(--gold-faint); color: var(--gold); }
+
+  /* SUMMARY DASHBOARD */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .summary-stat {
+    background: var(--surface2);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    margin-top: 4px;
+  }
+
+  /* LOADING STATE */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    gap: 16px;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--gold-border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    color: var(--text-dim);
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+  }
+
+  .loading-step {
+    color: var(--gold);
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* COMPLIANCE BLOCK */
+  .compliance-block {
+    background: rgba(201,168,76,0.05);
+    border: 1px solid var(--gold-border);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .compliance-block strong {
+    color: var(--gold);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* REVIEW GATE */
+  .review-gate {
+    background: rgba(201,168,76,0.08);
+    border: 2px solid var(--gold);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .review-gate.visible { display: block; }
+
+  .review-gate-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  /* CLIENT LIST */
+  .client-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 18px;
+    background: var(--surface2);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .client-row:hover { border-color: var(--gold); background: var(--gold-faint); }
+
+  .client-avatar {
+    width: 36px;
+    height: 36px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--black);
+    flex-shrink: 0;
+  }
+
+  .client-info { flex: 1; }
+
+  .client-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .client-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    margin-top: 2px;
+  }
+
+  /* TOAST */
+  .toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .toast {
+    background: var(--surface2);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    padding: 14px 20px;
+    font-size: 13px;
+    color: var(--text);
+    min-width: 280px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .toast.success { border-color: rgba(39,174,96,0.4); }
+  .toast.error { border-color: rgba(192,57,43,0.4); }
+
+  @keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--gold-border);
+    margin: 24px 0;
+  }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gold-border);
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px;
+  }
+  tr:hover td { background: var(--gold-faint); }
+
+  /* ROUND TIMELINE */
+  .round-timeline {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+  }
+
+  .round-item {
+    flex: 1;
+    text-align: center;
+    position: relative;
+  }
+
+  .round-item::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--gold-border);
+    z-index: 0;
+  }
+
+  .round-item:last-child::after { display: none; }
+
+  .round-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--surface3);
+    border: 2px solid var(--gold-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 6px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+    position: relative;
+    z-index: 1;
+  }
+
+  .round-dot.active { border-color: var(--gold); color: var(--gold); background: var(--gold-faint); }
+  .round-dot.done { border-color: var(--green); color: var(--green); background: var(--green-faint); }
+
+  .round-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gold-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold-dim); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    padding: 32px;
+    width: 90%;
+    max-width: 720px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .modal-close:hover { color: var(--text); }
+
+  /* RESEARCH PANEL */
+  .research-panel {
+    background: rgba(41,128,185,0.08);
+    border: 1px solid rgba(41,128,185,0.3);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-top: 12px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--text-dim);
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+  }
+
+  .research-panel.visible { display: block; }
+
+  .research-panel strong { color: var(--blue); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+  }
+
+  .empty-state-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+  .empty-state-text { font-size: 16px; margin-bottom: 8px; }
+  .empty-state-sub { font-size: 13px; color: var(--text-muted); }
+
+  /* STEP ACTIONS */
+  .step-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--gold-border);
+  }
+
+  /* LETTER CARD */
+  .letter-card {
+    background: var(--surface2);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .letter-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--gold-border);
+    background: rgba(0,0,0,0.2);
+  }
+
+  .letter-card-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--gold);
+    font-family: 'Playfair Display', serif;
+  }
+
+  .letter-card-body { padding: 20px; }
+
+  .bureau-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .bureau-tab {
+    padding: 8px 16px;
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: var(--surface3);
+    font-family: 'DM Mono', monospace;
+    transition: all 0.15s;
+  }
+
+  .bureau-tab:hover { border-color: var(--gold); color: var(--text); }
+  .bureau-tab.active { background: var(--gold-faint); border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- APP HEADER -->
+<header class="app-header">
+  <div class="header-brand">
+    <div class="logo-mark">D</div>
+    <div>
+      <div class="app-name">Dispute Command Center</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="compliance-badge">CROA Compliant</div>
+    <div class="compliance-badge">TX CSO</div>
+    <button class="btn btn-ghost btn-sm" onclick="openSettings()">⚙ Settings</button>
+  </div>
+</header>
+
+<!-- APP BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Main</div>
+      <div class="nav-item active" onclick="showPage('analyze')">
+        <span class="nav-icon">📋</span> Analyze Report
+      </div>
+      <div class="nav-item" onclick="showPage('letters')">
+        <span class="nav-icon">✉️</span> Generate Letters
+        <span class="nav-badge" id="letters-badge" style="display:none"></span>
+      </div>
+      <div class="nav-item" onclick="showPage('review')">
+        <span class="nav-icon">🔍</span> Review Queue
+        <span class="nav-badge" id="review-badge" style="display:none"></span>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Management</div>
+      <div class="nav-item" onclick="showPage('clients')">
+        <span class="nav-icon">👤</span> Clients
+      </div>
+      <div class="nav-item" onclick="showPage('rounds')">
+        <span class="nav-icon">🔄</span> Dispute Rounds
+      </div>
+      <div class="nav-item" onclick="showPage('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Compliance</div>
+      <div class="nav-item" onclick="showPage('contracts')">
+        <span class="nav-icon">📄</span> Contracts
+      </div>
+      <div class="nav-item" onclick="showPage('billing')">
+        <span class="nav-icon">💰</span> Billing
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- API KEY BANNER -->
+    <div class="api-banner" id="api-banner">
+      ⚠️ <span>No API key set. Add your Claude API key in Settings to enable AI analysis and letter generation.</span>
+    </div>
+
+    <!-- ======= PAGE: ANALYZE ======= -->
+    <section class="page-section active" id="page-analyze">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Credit Report Analysis</div>
+          <div class="page-sub">Drop a PDF — AI extracts every negative item, flags Metro 2 violations, researches optimal strategy per item.</div>
+        </div>
+      </div>
+
+      <!-- STEP TRACKER -->
+      <div class="progress-track">
+        <div class="progress-step active" id="step1">
+          <span class="step-num">1</span>
+          Upload PDF
+        </div>
+        <div class="progress-step" id="step2">
+          <span class="step-num">2</span>
+          Client Info
+        </div>
+        <div class="progress-step" id="step3">
+          <span class="step-num">3</span>
+          AI Analysis
+        </div>
+        <div class="progress-step" id="step4">
+          <span class="step-num">4</span>
+          Review Items
+        </div>
+        <div class="progress-step" id="step5">
+          <span class="step-num">5</span>
+          Generate Letters
+        </div>
+      </div>
+
+      <!-- STEP 1: UPLOAD -->
+      <div id="panel-upload" class="card">
+        <div class="card-title">📂 Upload Credit Report PDF</div>
+
+        <div class="compliance-block">
+          <strong>📋 What to upload</strong>
+          Upload a tri-merge or single-bureau credit report PDF. Any format works — Experian, TransUnion, Equifax, IdentityIQ, SmartCredit, MyFico. The AI will extract text, identify all negative items, check for Metro 2 violations, and assign dispute strategies.
+        </div>
+
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" accept=".pdf,.txt" id="report-file" onchange="handleFileUpload(event)">
+          <span class="drop-zone-icon">📄</span>
+          <div class="drop-zone-text">Drop credit report PDF here or click to browse</div>
+          <div class="drop-zone-sub">PDF / TXT • Max 20MB • Tri-merge or single bureau</div>
+        </div>
+
+        <div id="file-info" style="display:none; margin-top:16px; padding:14px; background:var(--green-faint); border:1px solid rgba(39,174,96,0.3); border-radius:var(--radius);">
+          <span style="color:var(--green);">✓ File loaded: </span><span id="file-name" style="font-family:'DM Mono',monospace; font-size:12px;"></span>
+          <span id="file-pages" style="margin-left:12px; color:var(--text-dim); font-size:12px;"></span>
+        </div>
+      </div>
+
+      <!-- STEP 2: CLIENT INFO -->
+      <div id="panel-client-info" class="card" style="display:none;">
+        <div class="card-title">👤 Client Information</div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">First Name *</div>
+            <input type="text" id="client-first" placeholder="John">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Last Name *</div>
+            <input type="text" id="client-last" placeholder="Smith">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">Street Address</div>
+            <input type="text" id="client-address" placeholder="123 Main St">
+          </div>
+          <div class="field-group">
+            <div class="field-label">City, State, ZIP</div>
+            <input type="text" id="client-city-state" placeholder="Houston, TX 77001">
+          </div>
+        </div>
+
+        <div class="field-row-3">
+          <div class="field-group">
+            <div class="field-label">SSN (last 4 only)</div>
+            <input type="text" id="client-ssn4" placeholder="XXXX" maxlength="4">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Date of Birth</div>
+            <input type="date" id="client-dob">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Dispute Round #</div>
+            <input type="number" id="client-round" value="1" min="1" max="10">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">Bureau(s) to dispute</div>
+            <select id="client-bureaus">
+              <option value="all">All Three Bureaus</option>
+              <option value="equifax">Equifax Only</option>
+              <option value="experian">Experian Only</option>
+              <option value="transunion">TransUnion Only</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Primary Goal</div>
+            <select id="client-goal">
+              <option value="deletion">Maximum Deletions</option>
+              <option value="accuracy">Accuracy Corrections</option>
+              <option value="score">Score Improvement</option>
+              <option value="mortgage">Mortgage Ready</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button class="btn btn-primary" onclick="startAnalysis()">🔍 Run AI Analysis →</button>
+          <span style="color:var(--text-muted); font-size:12px;">This will use Claude API to analyze the report</span>
+        </div>
+      </div>
+
+      <!-- STEP 3: LOADING -->
+      <div id="panel-loading" style="display:none;">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <div class="loading-text">AI is analyzing the credit report...</div>
+          <div class="loading-step" id="loading-step-text">Extracting text and identifying accounts</div>
+        </div>
+      </div>
+
+      <!-- STEP 4: ITEMS REVIEW -->
+      <div id="panel-items" style="display:none;">
+
+        <!-- Summary Stats -->
+        <div class="summary-grid" id="analysis-summary">
+          <div class="summary-stat">
+            <span class="stat-number" id="stat-total">0</span>
+            <div class="stat-label">Total Negative</div>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-number" id="stat-disputable">0</span>
+            <div class="stat-label">Disputable</div>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-number" id="stat-violations">0</span>
+            <div class="stat-label">Metro 2 Violations</div>
+          </div>
+          <div class="summary-stat">
+            <span class="stat-number" id="stat-high">0</span>
+            <div class="stat-label">High Priority</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="justify-content:space-between;">
+            <span>📋 Identified Negative Items</span>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <label style="font-size:12px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="checkbox" id="select-all" onchange="toggleSelectAll(this)"> Select All
+              </label>
+              <button class="btn btn-ghost btn-sm" onclick="generateLetters()">✉️ Generate Letters for Selected →</button>
+            </div>
+          </div>
+
+          <div id="items-list"><!-- Populated by JS --></div>
+        </div>
+
+        <!-- AI Rationale Section -->
+        <div class="card" id="rationale-card" style="display:none;">
+          <div class="card-title">🧠 AI Analysis Summary</div>
+          <div id="rationale-text" style="color:var(--text-dim);font-size:13px;line-height:1.8;"></div>
+        </div>
+
+        <!-- Items NOT being disputed -->
+        <div class="card" id="not-disputed-card" style="display:none;">
+          <div class="card-title" style="color:var(--text-dim);">⚠️ Items Not Recommended for Dispute</div>
+          <div id="not-disputed-list" style="color:var(--text-dim);font-size:13px;"></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======= PAGE: LETTERS ======= -->
+    <section class="page-section" id="page-letters">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dispute Letters</div>
+          <div class="page-sub">AI-generated, statute-cited letters. Review before anything goes to client.</div>
+        </div>
+        <button class="btn btn-primary" onclick="exportAllPDFs()" id="export-all-btn" style="display:none;">📤 Export All PDFs</button>
+      </div>
+
+      <div class="compliance-block">
+        <strong>⚖️ Your Review is Required (CROA Compliance)</strong>
+        You must review and approve every letter before it goes to the client. The "Approve & Release to Client" button appears only after you check the letter. This maintains your oversight requirement and CROA compliance. No guarantees of score increases appear in any letter language.
+      </div>
+
+      <div id="letters-container">
+        <div class="empty-state">
+          <span class="empty-state-icon">✉️</span>
+          <div class="empty-state-text">No letters generated yet</div>
+          <div class="empty-state-sub">Go to Analyze Report, upload a PDF, and select items to dispute</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= PAGE: REVIEW QUEUE ======= -->
+    <section class="page-section" id="page-review">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Review Queue</div>
+          <div class="page-sub">Letters pending your approval. Nothing reaches the client until you sign off.</div>
+        </div>
+      </div>
+
+      <div id="review-queue-list">
+        <div class="empty-state">
+          <span class="empty-state-icon">✅</span>
+          <div class="empty-state-text">Queue is clear</div>
+          <div class="empty-state-sub">All letters have been reviewed</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= PAGE: CLIENTS ======= -->
+    <section class="page-section" id="page-clients">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Client Management</div>
+          <div class="page-sub">Track clients, dispute progress, contract status.</div>
+        </div>
+        <button class="btn btn-primary" onclick="openNewClientModal()">+ New Client</button>
+      </div>
+
+      <div id="clients-list">
+        <div class="empty-state">
+          <span class="empty-state-icon">👤</span>
+          <div class="empty-state-text">No clients yet</div>
+          <div class="empty-state-sub">Add your first client to get started</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= PAGE: ROUNDS ======= -->
+    <section class="page-section" id="page-rounds">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dispute Rounds</div>
+          <div class="page-sub">30/40-day cycle tracking. Know exactly when to act.</div>
+        </div>
+      </div>
+
+      <div id="rounds-content">
+        <div class="empty-state">
+          <span class="empty-state-icon">🔄</span>
+          <div class="empty-state-text">No active rounds</div>
+          <div class="empty-state-sub">Dispute rounds appear here once letters are generated</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= PAGE: DASHBOARD ======= -->
+    <section class="page-section" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">Operations Dashboard</div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-stat">
+          <span class="stat-number" id="dash-clients">0</span>
+          <div class="stat-label">Total Clients</div>
+        </div>
+        <div class="summary-stat">
+          <span class="stat-number" id="dash-active">0</span>
+          <div class="stat-label">Active Rounds</div>
+        </div>
+        <div class="summary-stat">
+          <span class="stat-number" id="dash-pending">0</span>
+          <div class="stat-label">Pending Deletions</div>
+        </div>
+        <div class="summary-stat">
+          <span class="stat-number" id="dash-revenue">$0</span>
+          <div class="stat-label">Earned (Post-Delete)</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 Recent Activity</div>
+        <div id="activity-log" style="color:var(--text-dim);font-size:13px;">
+          No activity yet. Start by analyzing a credit report.
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= PAGE: CONTRACTS ======= -->
+    <section class="page-section" id="page-contracts">
+      <div class="page-header">
+        <div>
+          <div class="page-title">CROA-Compliant Contracts</div>
+          <div class="page-sub">Generate and track written agreements per federal and Texas law.</div>
+        </div>
+      </div>
+
+      <div class="compliance-block">
+        <strong>📋 Federal & Texas Requirements</strong>
+        Every client requires: (1) Written contract before services begin, (2) "Consumer Credit File Rights" disclosure, (3) Signed 3-day right to cancel, (4) No upfront fees — payment only after deletion/service delivery. Texas Chapter 393 Finance Code additionally requires CSO registration, $10,000 surety bond, and specific contract language.
+      </div>
+
+      <div class="card">
+        <div class="card-title">Generate Client Contract</div>
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">Client Name</div>
+            <input type="text" id="contract-client-name" placeholder="Full Legal Name">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Fee Per Deletion ($)</div>
+            <input type="number" id="contract-fee" placeholder="99" min="0">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">Services Description</div>
+            <input type="text" id="contract-services" value="Credit report analysis, dispute letter generation, bureau follow-up, and deletion tracking under FCRA §§ 611, 623.">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Contract Date</div>
+            <input type="date" id="contract-date">
+          </div>
+        </div>
+        <div class="step-actions">
+          <button class="btn btn-primary" onclick="generateContract()">📄 Generate Contract</button>
+          <button class="btn btn-ghost" onclick="generateDisclosure()">📃 Generate Rights Disclosure</button>
+        </div>
+      </div>
+
+      <div id="contract-output" style="display:none;">
+        <div class="card">
+          <div class="card-title" style="justify-content:space-between;">
+            <span>Generated Contract</span>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-ghost btn-sm" onclick="copyContract()">📋 Copy</button>
+              <button class="btn btn-primary btn-sm" onclick="downloadContractPDF()">📤 Download PDF</button>
+            </div>
+          </div>
+          <div class="letter-output" id="contract-text"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= PAGE: BILLING ======= -->
+    <section class="page-section" id="page-billing">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Billing — Pay After Deletion</div>
+          <div class="page-sub">CROA-compliant. Invoices trigger only after confirmed deletions.</div>
+        </div>
+      </div>
+
+      <div class="compliance-block">
+        <strong>💰 Pay-After-Deletion Model</strong>
+        Under CROA, you cannot collect payment before services are fully rendered. This billing system only generates invoices after you mark an item as deleted/confirmed. This is the safest, most CROA-compliant payment model available.
+      </div>
+
+      <div class="card">
+        <div class="card-title">Log a Deletion</div>
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">Client Name</div>
+            <input type="text" id="bill-client" placeholder="Client name">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Item Deleted</div>
+            <input type="text" id="bill-item" placeholder="e.g., Portfolio Recovery — $1,200 Collection">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-group">
+            <div class="field-label">Fee for This Deletion ($)</div>
+            <input type="number" id="bill-amount" placeholder="99">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Confirmation Date</div>
+            <input type="date" id="bill-date">
+          </div>
+        </div>
+        <div class="step-actions">
+          <button class="btn btn-primary" onclick="logDeletion()">✅ Log Deletion & Generate Invoice</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Billing Ledger</div>
+        <div id="billing-ledger">
+          <div style="color:var(--text-muted);font-size:13px;text-align:center;padding:24px;">No invoices yet. Log deletions to generate invoices.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSettings()">✕</button>
+    <div class="modal-title">⚙ Settings</div>
+
+    <div class="field-group">
+      <div class="field-label">Claude API Key</div>
+      <div class="api-key-input-row">
+        <input type="password" id="api-key-input" placeholder="sk-ant-...">
+        <button class="btn btn-primary" onclick="saveApiKey()" style="white-space:nowrap;">Save Key</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">Key stored locally in browser. Never sent to any server except Anthropic's API directly.</div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="field-group">
+      <div class="field-label">Your Business Name</div>
+      <input type="text" id="biz-name" placeholder="Your Credit Repair Business">
+    </div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <div class="field-label">Your Name / Agent</div>
+        <input type="text" id="agent-name" placeholder="Your Full Name">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Business Phone</div>
+        <input type="text" id="biz-phone" placeholder="(713) 000-0000">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">Business Address</div>
+      <input type="text" id="biz-address" placeholder="Houston, TX">
+    </div>
+
+    <div class="field-group">
+      <div class="field-label">Fee Per Deletion (default)</div>
+      <input type="number" id="default-fee" placeholder="99" value="99">
+    </div>
+
+    <hr class="divider">
+
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeSettings()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- LETTER PREVIEW MODAL -->
+<div class="modal-overlay" id="letter-modal">
+  <div class="modal" style="max-width:800px;">
+    <button class="modal-close" onclick="closeLetterModal()">✕</button>
+    <div class="modal-title" id="letter-modal-title">Dispute Letter</div>
+
+    <div class="bureau-tabs" id="letter-modal-tabs"></div>
+
+    <div class="letter-output" id="letter-modal-body" style="max-height:450px;"></div>
+
+    <div class="step-actions">
+      <button class="btn btn-primary" onclick="approveCurrentLetter()">✅ Approve & Mark Reviewed</button>
+      <button class="btn btn-ghost" onclick="copyLetterModal()">📋 Copy Letter</button>
+      <button class="btn btn-ghost" onclick="downloadLetterPDF()">📤 Download PDF</button>
+      <button class="btn btn-danger btn-sm" style="margin-left:auto;" onclick="closeLetterModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const STATE = {
+  apiKey: '',
+  settings: {
+    bizName: 'Credit Repair Services',
+    agentName: '',
+    phone: '',
+    address: 'Houston, TX',
+    defaultFee: 99
+  },
+  reportText: '',
+  clientInfo: {},
+  analysisItems: [],
+  generatedLetters: [],
+  clients: [],
+  billing: [],
+  currentLetterIdx: 0,
+  currentBureau: 'equifax'
+};
+
+// Load from localStorage
+function loadState() {
+  try {
+    const saved = localStorage.getItem('dcc_state');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      STATE.apiKey = parsed.apiKey || '';
+      STATE.settings = { ...STATE.settings, ...parsed.settings };
+      STATE.clients = parsed.clients || [];
+      STATE.billing = parsed.billing || [];
+      STATE.generatedLetters = parsed.generatedLetters || [];
+    }
+  } catch(e) {}
+
+  updateApiKeyBanner();
+  updateDashboard();
+  renderClients();
+  renderBilling();
+  renderLetters();
+}
+
+function saveState() {
+  localStorage.setItem('dcc_state', JSON.stringify({
+    apiKey: STATE.apiKey,
+    settings: STATE.settings,
+    clients: STATE.clients,
+    billing: STATE.billing,
+    generatedLetters: STATE.generatedLetters
+  }));
+}
+
+// ============================================================
+// NAV
+// ============================================================
+function showPage(page) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById(`page-${page}`).classList.add('active');
+
+  // Find and activate the nav item that called showPage
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') === `showPage('${page}')`) n.classList.add('active');
+  });
+}
+
+// ============================================================
+// API KEY & SETTINGS
+// ============================================================
+function updateApiKeyBanner() {
+  const banner = document.getElementById('api-banner');
+  if (STATE.apiKey && STATE.apiKey.startsWith('sk-ant')) {
+    banner.classList.add('ok');
+    banner.innerHTML = '✅ API key configured. AI analysis enabled.';
+  } else {
+    banner.classList.remove('ok');
+    banner.innerHTML = '⚠️ No API key set. <button class="btn btn-ghost btn-sm" onclick="openSettings()" style="margin-left:12px;">Add API Key</button>';
+  }
+}
+
+function openSettings() {
+  document.getElementById('api-key-input').value = STATE.apiKey;
+  document.getElementById('biz-name').value = STATE.settings.bizName;
+  document.getElementById('agent-name').value = STATE.settings.agentName;
+  document.getElementById('biz-phone').value = STATE.settings.phone;
+  document.getElementById('biz-address').value = STATE.settings.address;
+  document.getElementById('default-fee').value = STATE.settings.defaultFee;
+  document.getElementById('settings-modal').classList.add('open');
+}
+
+function closeSettings() {
+  document.getElementById('settings-modal').classList.remove('open');
+}
+
+function saveApiKey() {
+  STATE.apiKey = document.getElementById('api-key-input').value.trim();
+  updateApiKeyBanner();
+  toast('API key saved', 'success');
+}
+
+function saveSettings() {
+  STATE.apiKey = document.getElementById('api-key-input').value.trim();
+  STATE.settings.bizName = document.getElementById('biz-name').value;
+  STATE.settings.agentName = document.getElementById('agent-name').value;
+  STATE.settings.phone = document.getElementById('biz-phone').value;
+  STATE.settings.address = document.getElementById('biz-address').value;
+  STATE.settings.defaultFee = Number(document.getElementById('default-fee').value) || 99;
+  saveState();
+  updateApiKeyBanner();
+  closeSettings();
+  toast('Settings saved', 'success');
+}
+
+// ============================================================
+// FILE UPLOAD
+// ============================================================
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    STATE.reportText = e.target.result;
+    document.getElementById('file-info').style.display = 'block';
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('file-pages').textContent = `${Math.ceil(STATE.reportText.length / 3000)} estimated pages`;
+
+    // Show client info panel
+    document.getElementById('panel-client-info').style.display = 'block';
+    setStepActive(2);
+    toast('Report loaded — fill in client info below', 'success');
+  };
+  reader.readAsText(file);
+}
+
+// Set up drag/drop
+document.addEventListener('DOMContentLoaded', () => {
+  const dz = document.getElementById('drop-zone');
+  if (!dz) return;
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      document.getElementById('report-file').files = e.dataTransfer.files;
+      handleFileUpload({ target: { files: e.dataTransfer.files } });
+    }
+  });
+
+  // Set today's date defaults
+  const today = new Date().toISOString().split('T')[0];
+  const contractDate = document.getElementById('contract-date');
+  if (contractDate) contractDate.value = today;
+  const billDate = document.getElementById('bill-date');
+  if (billDate) billDate.value = today;
+
+  loadState();
+});
+
+function setStepActive(n) {
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById(`step${i}`);
+    if (!el) continue;
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  }
+}
+
+// ============================================================
+// ANALYSIS
+// ============================================================
+async function startAnalysis() {
+  const firstName = document.getElementById('client-first').value.trim();
+  const lastName = document.getElementById('client-last').value.trim();
+
+  if (!firstName || !lastName) { toast('Enter client first and last name', 'error'); return; }
+  if (!STATE.reportText) { toast('No report text loaded', 'error'); return; }
+  if (!STATE.apiKey) { openSettings(); toast('Add your Claude API key first', 'error'); return; }
+
+  STATE.clientInfo = {
+    first: firstName,
+    last: lastName,
+    address: document.getElementById('client-address').value,
+    cityState: document.getElementById('client-city-state').value,
+    ssn4: document.getElementById('client-ssn4').value,
+    dob: document.getElementById('client-dob').value,
+    round: document.getElementById('client-round').value,
+    bureaus: document.getElementById('client-bureaus').value,
+    goal: document.getElementById('client-goal').value
+  };
+
+  document.getElementById('panel-client-info').style.display = 'none';
+  document.getElementById('panel-loading').style.display = 'block';
+  setStepActive(3);
+
+  const loadingSteps = [
+    'Extracting accounts and tradeline data...',
+    'Checking dates of first delinquency...',
+    'Scanning for Metro 2 coding violations...',
+    'Assessing FCRA reporting time limits...',
+    'Evaluating dispute strategy per item...',
+    'Generating analysis summary...'
+  ];
+
+  let stepIdx = 0;
+  const stepInterval = setInterval(() => {
+    if (stepIdx < loadingSteps.length) {
+      document.getElementById('loading-step-text').textContent = loadingSteps[stepIdx++];
+    }
+  }, 1800);
+
+  try {
+    const prompt = buildAnalysisPrompt();
+    const response = await callClaude(prompt, 4000);
+    clearInterval(stepInterval);
+
+    // Parse JSON from response
+    let items;
+    try {
+      const jsonMatch = response.match(/```json\s*([\s\S]*?)\s*```/) || response.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+      const jsonStr = jsonMatch ? jsonMatch[1] || jsonMatch[0] : response;
+      items = JSON.parse(jsonStr);
+    } catch(e) {
+      // Try to extract JSON from free text
+      const start = response.indexOf('{');
+      const end = response.lastIndexOf('}');
+      if (start !== -1 && end !== -1) {
+        items = JSON.parse(response.slice(start, end + 1));
+      } else {
+        throw new Error('Could not parse AI response');
+      }
+    }
+
+    STATE.analysisItems = Array.isArray(items) ? items : (items.items || items.negative_items || []);
+    renderAnalysisItems();
+    document.getElementById('panel-loading').style.display = 'none';
+    document.getElementById('panel-items').style.display = 'block';
+    setStepActive(4);
+    toast(`Analysis complete — ${STATE.analysisItems.length} items found`, 'success');
+
+  } catch (err) {
+    clearInterval(stepInterval);
+    document.getElementById('panel-loading').style.display = 'none';
+    document.getElementById('panel-client-info').style.display = 'block';
+    setStepActive(2);
+    toast('Analysis failed: ' + err.message, 'error');
+    console.error(err);
+  }
+}
+
+function buildAnalysisPrompt() {
+  const truncated = STATE.reportText.slice(0, 15000);
+  return `You are an expert credit repair analyst with deep knowledge of FCRA, Metro 2 format, FDCPA, and Texas credit law.
+
+Analyze this credit report text and identify ALL negative items. Return ONLY valid JSON — no markdown, no explanation.
+
+CREDIT REPORT TEXT:
+---
+${truncated}
+---
+
+CLIENT GOAL: ${STATE.clientInfo.goal}
+DISPUTE ROUND: ${STATE.clientInfo.round}
+
+Return a JSON array of objects. Each object must have these exact fields:
+{
+  "id": "unique string id",
+  "creditor_name": "name of creditor or collector",
+  "account_number": "account number or partial",
+  "account_type": "collection | late_payment | charge_off | inquiry | judgment | bankruptcy | repossession | other",
+  "balance": "balance amount as string",
+  "date_opened": "YYYY-MM-DD or partial date string",
+  "date_of_first_delinquency": "YYYY-MM-DD or estimated or unknown",
+  "expected_removal_date": "YYYY-MM-DD or estimated",
+  "bureaus_reporting": ["equifax", "experian", "transunion"],
+  "severity": "high | medium | low",
+  "disputable": true or false,
+  "dispute_reason": "primary reason to dispute — be specific",
+  "metro2_violations": ["list", "of", "violations", "found", "or", "empty array"],
+  "fcra_violations": ["list", "of", "fcra", "violations", "or", "empty array"],
+  "recommended_strategy": "specific dispute strategy — e.g. 'Challenge DOFD as Metro 2 violation §623, demand verification of original creditor agreement'",
+  "statutes_to_cite": ["15 U.S.C. § 1681i", "etc"],
+  "not_dispute_reason": "if disputable is false, explain why",
+  "texas_escalation": true or false,
+  "notes": "any important notes for this item"
+}
+
+If the report text is not a credit report or cannot be parsed, return: {"error": "Not a valid credit report"}
+
+Evaluate Metro 2 violations including: wrong account status codes, DOFD manipulation, missing credit limits, balance/status mismatches, payment history gaps, re-aging, unreported closed dates.
+
+Be thorough — identify EVERY negative item even if strategy is complex.`;
+}
+
+function renderAnalysisItems() {
+  const items = STATE.analysisItems;
+  const disputable = items.filter(i => i.disputable);
+  const notDisputable = items.filter(i => !i.disputable);
+  const violations = items.filter(i => i.metro2_violations && i.metro2_violations.length > 0);
+  const high = items.filter(i => i.severity === 'high');
+
+  document.getElementById('stat-total').textContent = items.length;
+  document.getElementById('stat-disputable').textContent = disputable.length;
+  document.getElementById('stat-violations').textContent = violations.length;
+  document.getElementById('stat-high').textContent = high.length;
+
+  const list = document.getElementById('items-list');
+  list.innerHTML = '';
+
+  if (!items.length) {
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">No negative items found in the report.</div>';
+    return;
+  }
+
+  // Sort: high severity first
+  const sorted = [...disputable].sort((a,b) => {
+    const s = {high:0,medium:1,low:2};
+    return (s[a.severity]||2) - (s[b.severity]||2);
+  });
+
+  sorted.forEach((item, idx) => {
+    const el = document.createElement('div');
+    el.className = 'analysis-item';
+    el.innerHTML = `
+      <div class="analysis-item-header" onclick="toggleItem('item-${idx}')">
+        <input type="checkbox" class="item-checkbox" id="check-${idx}" checked onclick="event.stopPropagation()">
+        <div class="item-severity ${item.severity}"></div>
+        <div class="item-name">${item.creditor_name || 'Unknown Creditor'}</div>
+        <div class="item-creditor">${item.account_number ? '···' + item.account_number.slice(-4) : ''}</div>
+        <span class="item-type-badge badge-${(item.account_type||'other').replace('_','-')}">${(item.account_type||'other').replace('_',' ')}</span>
+        ${item.metro2_violations && item.metro2_violations.length ? '<span style="font-size:11px;color:var(--gold);font-family:\'DM Mono\',monospace;">⚠ Metro 2</span>' : ''}
+        ${item.texas_escalation ? '<span style="font-size:11px;color:var(--orange);font-family:\'DM Mono\',monospace;">🤠 TX Escalate</span>' : ''}
+        <span style="color:var(--text-muted);font-size:14px;margin-left:8px;">▾</span>
+      </div>
+      <div class="item-detail" id="item-${idx}">
+        <div class="detail-grid">
+          <div class="detail-field"><div class="detail-field-label">Balance</div><div class="detail-field-value">${item.balance || 'Unknown'}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Date Opened</div><div class="detail-field-value">${item.date_opened || 'Unknown'}</div></div>
+          <div class="detail-field"><div class="detail-field-label">DOFD</div><div class="detail-field-value">${item.date_of_first_delinquency || 'Unknown'}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Expected Removal</div><div class="detail-field-value">${item.expected_removal_date || 'Unknown'}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Bureaus</div><div class="detail-field-value">${(item.bureaus_reporting||[]).join(', ') || 'Unknown'}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Priority</div><div class="detail-field-value" style="color:${item.severity==='high'?'var(--red)':item.severity==='medium'?'var(--orange)':'var(--blue)'}">${(item.severity||'low').toUpperCase()}</div></div>
+        </div>
+        <div style="margin-bottom:10px;">
+          <div class="detail-field-label">Dispute Reason</div>
+          <div style="font-size:13px;color:var(--text);margin-top:4px;">${item.dispute_reason || ''}</div>
+        </div>
+        <div style="margin-bottom:10px;">
+          <div class="detail-field-label">Recommended Strategy</div>
+          <div style="font-size:13px;color:var(--gold);margin-top:4px;">${item.recommended_strategy || ''}</div>
+        </div>
+        ${item.metro2_violations && item.metro2_violations.length ? `
+        <div style="margin-bottom:10px;">
+          <div class="detail-field-label">Metro 2 Violations</div>
+          <div style="margin-top:6px;">${item.metro2_violations.map(v => `<span class="violation-tag">${v}</span>`).join('')}</div>
+        </div>` : ''}
+        ${item.fcra_violations && item.fcra_violations.length ? `
+        <div style="margin-bottom:10px;">
+          <div class="detail-field-label">FCRA Violations</div>
+          <div style="margin-top:6px;">${item.fcra_violations.map(v => `<span class="violation-tag" style="color:var(--red);border-color:rgba(192,57,43,0.4);background:var(--red-faint);">${v}</span>`).join('')}</div>
+        </div>` : ''}
+        ${item.statutes_to_cite && item.statutes_to_cite.length ? `
+        <div style="margin-bottom:10px;">
+          <div class="detail-field-label">Statutes to Cite</div>
+          <div style="margin-top:6px;">${item.statutes_to_cite.map(s => `<span class="violation-tag">${s}</span>`).join('')}</div>
+        </div>` : ''}
+        ${item.texas_escalation ? `<div style="background:rgba(230,126,34,0.1);border:1px solid rgba(230,126,34,0.3);border-radius:4px;padding:10px 14px;font-size:12px;color:var(--orange);margin-top:8px;">🤠 Texas Escalation available — Tex. Fin. Code § 393 / DTPA language recommended</div>` : ''}
+      </div>
+    `;
+    list.appendChild(el);
+  });
+
+  // Not disputed section
+  if (notDisputable.length > 0) {
+    const nd = document.getElementById('not-disputed-card');
+    nd.style.display = 'block';
+    const ndl = document.getElementById('not-disputed-list');
+    ndl.innerHTML = notDisputable.map(i => `
+      <div style="padding:10px 14px;border-bottom:1px solid var(--gold-border);display:flex;gap:12px;align-items:flex-start;">
+        <div style="font-weight:600;flex:1;">${i.creditor_name}</div>
+        <div style="color:var(--text-muted);font-size:12px;max-width:400px;">${i.not_dispute_reason || 'Not recommended for dispute at this time'}</div>
+      </div>
+    `).join('');
+  }
+}
+
+function toggleItem(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+function toggleSelectAll(cb) {
+  document.querySelectorAll('.item-checkbox').forEach(c => c.checked = cb.checked);
+}
+
+// ============================================================
+// LETTER GENERATION
+// ============================================================
+async function generateLetters() {
+  const selected = [];
+  document.querySelectorAll('.item-checkbox').forEach((cb, idx) => {
+    if (cb.checked && STATE.analysisItems[idx]) selected.push(STATE.analysisItems[idx]);
+  });
+
+  if (!selected.length) { toast('Select at least one item to dispute', 'error'); return; }
+  if (!STATE.apiKey) { openSettings(); return; }
+
+  showPage('letters');
+  setStepActive(5);
+
+  const container = document.getElementById('letters-container');
+  container.innerHTML = `<div class="loading-state"><div class="spinner"></div><div class="loading-text">Generating ${selected.length} dispute letter(s)...<br><span style="font-size:11px;color:var(--text-muted);">Claude is writing statute-cited, personalized letters for each item and bureau</span></div></div>`;
+
+  try {
+    const bureaus = getBureauList();
+    const letters = [];
+
+    for (const item of selected) {
+      const bureausForItem = item.bureaus_reporting && item.bureaus_reporting.length
+        ? item.bureaus_reporting.filter(b => bureaus === 'all' || bureaus.includes(b))
+        : (bureaus === 'all' ? ['equifax','experian','transunion'] : bureaus);
+
+      for (const bureau of (bureaus === 'all' ? ['equifax','experian','transunion'] : [bureaus])) {
+        const letter = await generateSingleLetter(item, bureau);
+        letters.push({
+          id: `${item.id}-${bureau}`,
+          item,
+          bureau,
+          letter,
+          approved: false,
+          generatedAt: new Date().toISOString()
+        });
+      }
+    }
+
+    STATE.generatedLetters = [...STATE.generatedLetters, ...letters];
+    saveState();
+    renderLetters();
+    updateReviewBadge();
+    document.getElementById('export-all-btn').style.display = 'inline-flex';
+    toast(`${letters.length} letters generated — review required before release`, 'success');
+
+  } catch(err) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-state-icon">❌</span><div class="empty-state-text">Letter generation failed</div><div class="empty-state-sub">${err.message}</div></div>`;
+    toast('Letter generation failed: ' + err.message, 'error');
+  }
+}
+
+function getBureauList() {
+  return STATE.clientInfo.bureaus || 'all';
+}
+
+async function generateSingleLetter(item, bureau) {
+  const client = STATE.clientInfo;
+  const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const bureauAddresses = {
+    equifax: 'Equifax Information Services LLC\nP.O. Box 740256\nAtlanta, GA 30374-0256',
+    experian: 'Experian\nP.O. Box 4500\nAllen, TX 75013',
+    transunion: 'TransUnion Consumer Solutions\nP.O. Box 2000\nChester, PA 19016'
+  };
+
+  const prompt = `You are an expert credit repair attorney and consumer rights advocate. Write a formal, legally-precise dispute letter.
+
+CLIENT: ${client.first} ${client.last}
+ADDRESS: ${client.address}, ${client.cityState}
+DATE: ${today}
+BUREAU: ${bureau.toUpperCase()}
+DISPUTE ROUND: ${client.round}
+
+ITEM TO DISPUTE:
+- Creditor: ${item.creditor_name}
+- Account #: ${item.account_number || 'Unknown'}
+- Type: ${item.account_type}
+- Balance: ${item.balance}
+- DOFD: ${item.date_of_first_delinquency}
+- Dispute Reason: ${item.dispute_reason}
+- Strategy: ${item.recommended_strategy}
+- Metro 2 Violations: ${(item.metro2_violations||[]).join(', ') || 'None identified'}
+- FCRA Violations: ${(item.fcra_violations||[]).join(', ') || 'None identified'}
+- Statutes: ${(item.statutes_to_cite||[]).join(', ')}
+- Texas Escalation: ${item.texas_escalation ? 'YES — include Texas Finance Code § 393 and DTPA language' : 'No'}
+
+INSTRUCTIONS:
+1. Format as a formal business letter
+2. Open with consumer rights invocation under 15 U.S.C. § 1681i
+3. State the specific inaccuracy or violation — be precise, not generic
+4. Cite EVERY relevant statute (FCRA section numbers, FDCPA if applicable, Metro 2 standards)
+5. If Texas escalation: include Tex. Fin. Code § 393.405 and Texas DTPA reference
+6. Demand: investigation within 30 days, written results, deletion if unverifiable
+7. Reference the furnisher's obligation under 15 U.S.C. § 1681s-2(b)
+8. DO NOT guarantee score improvement or promise specific outcomes
+9. DO NOT make any statement that could be construed as fraudulent
+10. Close with certified mail tracking recommendation note
+11. Use professional, authoritative tone — not hostile, but firm
+12. Include a specific enclosures list (government ID, SSN proof, utility bill)
+13. End with signature block for ${client.first} ${client.last}
+
+Write ONLY the letter text. No preamble. Start with the date line.`;
+
+  const letterText = await callClaude(prompt, 1500);
+  return `${bureauAddresses[bureau]}\n\n${letterText}`;
+}
+
+// ============================================================
+// RENDER LETTERS
+// ============================================================
+function renderLetters() {
+  const container = document.getElementById('letters-container');
+  if (!STATE.generatedLetters.length) {
+    container.innerHTML = `<div class="empty-state"><span class="empty-state-icon">✉️</span><div class="empty-state-text">No letters generated yet</div><div class="empty-state-sub">Go to Analyze Report, upload a PDF, and select items to dispute</div></div>`;
+    return;
+  }
+
+  // Group by item
+  const byItem = {};
+  STATE.generatedLetters.forEach(l => {
+    const key = l.item.creditor_name;
+    if (!byItem[key]) byItem[key] = [];
+    byItem[key].push(l);
+  });
+
+  container.innerHTML = '';
+  Object.entries(byItem).forEach(([creditor, letters]) => {
+    const allApproved = letters.every(l => l.approved);
+    const card = document.createElement('div');
+    card.className = 'letter-card';
+    card.innerHTML = `
+      <div class="letter-card-header">
+        <div>
+          <div class="letter-card-title">${creditor}</div>
+          <div style="font-size:11px;color:var(--text-dim);margin-top:4px;font-family:'DM Mono',monospace;">${letters.length} bureau letter(s) — ${letters[0].item.account_type.replace('_',' ')}</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          ${allApproved ? '<span class="status-chip chip-approved">✓ Reviewed</span>' : '<span class="status-chip chip-reviewing">⏳ Needs Review</span>'}
+        </div>
+      </div>
+      <div class="letter-card-body">
+        <div class="bureau-tabs">
+          ${letters.map((l,i) => `<div class="bureau-tab ${i===0?'active':''}" onclick="switchBureau(this, '${l.id}')">${l.bureau.toUpperCase()}</div>`).join('')}
+        </div>
+        <div class="review-gate ${!allApproved ? 'visible' : ''}">
+          <div class="review-gate-title">⚖️ Your Review Required</div>
+          <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;">Read this letter completely before approving. Once approved, it's marked ready for client delivery. No score guarantees appear in this letter.</p>
+        </div>
+        <div id="preview-${letters[0].id}" class="letter-output" style="max-height:300px;font-size:12px;">${escapeHtml(letters[0].letter)}</div>
+        <div class="step-actions" style="justify-content:flex-start;">
+          <button class="btn btn-primary btn-sm" onclick="openLetterModal('${letters[0].id}')">🔍 Full Review & Approve</button>
+          <button class="btn btn-ghost btn-sm" onclick="copyLetter('${letters[0].id}')">📋 Copy</button>
+          <button class="btn btn-ghost btn-sm" onclick="downloadSinglePDF('${letters[0].id}')">📤 PDF</button>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  document.getElementById('export-all-btn').style.display = 'inline-flex';
+  updateLettersBadge();
+  updateReviewBadge();
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function switchBureau(tabEl, letterId) {
+  // Update tabs
+  tabEl.closest('.letter-card-body').querySelectorAll('.bureau-tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  // Update preview
+  const letter = STATE.generatedLetters.find(l => l.id === letterId);
+  if (letter) {
+    // Find preview div in same card
+    const preview = tabEl.closest('.letter-card-body').querySelector('.letter-output');
+    if (preview) preview.textContent = letter.letter;
+  }
+}
+
+function updateLettersBadge() {
+  const badge = document.getElementById('letters-badge');
+  if (STATE.generatedLetters.length) {
+    badge.style.display = 'inline-block';
+    badge.textContent = STATE.generatedLetters.length;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function updateReviewBadge() {
+  const badge = document.getElementById('review-badge');
+  const pending = STATE.generatedLetters.filter(l => !l.approved).length;
+  if (pending) {
+    badge.style.display = 'inline-block';
+    badge.textContent = pending;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ============================================================
+// LETTER MODAL
+// ============================================================
+let modalCurrentId = null;
+
+function openLetterModal(id) {
+  modalCurrentId = id;
+  const letter = STATE.generatedLetters.find(l => l.id === id);
+  if (!letter) return;
+
+  // Find all letters for same item
+  const siblings = STATE.generatedLetters.filter(l => l.item.creditor_name === letter.item.creditor_name);
+
+  document.getElementById('letter-modal-title').textContent = `${letter.item.creditor_name} — ${letter.bureau.toUpperCase()}`;
+
+  const tabs = document.getElementById('letter-modal-tabs');
+  tabs.innerHTML = siblings.map(l => `<div class="bureau-tab ${l.id===id?'active':''}" onclick="switchModalBureau(this,'${l.id}')">${l.bureau.toUpperCase()} ${l.approved?'✓':''}</div>`).join('');
+
+  document.getElementById('letter-modal-body').textContent = letter.letter;
+  document.getElementById('letter-modal').classList.add('open');
+}
+
+function switchModalBureau(tabEl, id) {
+  modalCurrentId = id;
+  tabEl.closest('.bureau-tabs').querySelectorAll('.bureau-tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  const letter = STATE.generatedLetters.find(l => l.id === id);
+  if (letter) document.getElementById('letter-modal-body').textContent = letter.letter;
+}
+
+function closeLetterModal() {
+  document.getElementById('letter-modal').classList.remove('open');
+}
+
+function approveCurrentLetter() {
+  if (!modalCurrentId) return;
+  const letter = STATE.generatedLetters.find(l => l.id === modalCurrentId);
+  if (letter) {
+    letter.approved = true;
+    saveState();
+    renderLetters();
+    toast(`Letter approved — ${letter.bureau.toUpperCase()} / ${letter.item.creditor_name}`, 'success');
+    closeLetterModal();
+  }
+}
+
+function copyLetterModal() {
+  const text = document.getElementById('letter-modal-body').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('Letter copied', 'success'));
+}
+
+function copyLetter(id) {
+  const letter = STATE.generatedLetters.find(l => l.id === id);
+  if (letter) navigator.clipboard.writeText(letter.letter).then(() => toast('Copied', 'success'));
+}
+
+// ============================================================
+// PDF EXPORT (client-side using window.print trick for plain text)
+// ============================================================
+function downloadLetterPDF() {
+  if (!modalCurrentId) return;
+  const letter = STATE.generatedLetters.find(l => l.id === modalCurrentId);
+  if (letter) printLetter(letter);
+}
+
+function downloadSinglePDF(id) {
+  const letter = STATE.generatedLetters.find(l => l.id === id);
+  if (letter) printLetter(letter);
+}
+
+function printLetter(letter) {
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><title>Dispute Letter - ${letter.item.creditor_name} - ${letter.bureau}</title>
+    <style>
+      body { font-family: 'Times New Roman', serif; font-size: 12pt; margin: 1in; line-height: 1.8; color: #000; }
+      pre { white-space: pre-wrap; font-family: 'Times New Roman', serif; font-size: 12pt; }
+    </style></head>
+    <body><pre>${letter.letter}</pre></body></html>
+  `);
+  win.document.close();
+  win.focus();
+  setTimeout(() => { win.print(); }, 500);
+}
+
+function exportAllPDFs() {
+  const approved = STATE.generatedLetters.filter(l => l.approved);
+  if (!approved.length) { toast('No approved letters to export. Review and approve letters first.', 'error'); return; }
+  approved.forEach((l, i) => setTimeout(() => printLetter(l), i * 800));
+  toast(`Exporting ${approved.length} approved letters`, 'success');
+}
+
+// ============================================================
+// CONTRACT GENERATION
+// ============================================================
+function generateContract() {
+  const clientName = document.getElementById('contract-client-name').value;
+  const fee = document.getElementById('contract-fee').value || STATE.settings.defaultFee;
+  const services = document.getElementById('contract-services').value;
+  const date = document.getElementById('contract-date').value;
+  const bizName = STATE.settings.bizName;
+  const agentName = STATE.settings.agentName;
+  const bizAddr = STATE.settings.address;
+
+  if (!clientName) { toast('Enter client name', 'error'); return; }
+
+  const cancelDate = new Date(date);
+  cancelDate.setDate(cancelDate.getDate() + 3);
+  const cancelDateStr = cancelDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const contract = `CREDIT SERVICES AGREEMENT
+Pursuant to the Credit Repair Organizations Act (15 U.S.C. §§ 1679–1679j)
+and Texas Finance Code Chapter 393
+
+Date: ${new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+
+PARTIES:
+Credit Services Organization: ${bizName}
+Business Address: ${bizAddr}
+Agent: ${agentName}
+
+Client: ${clientName}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. SERVICES TO BE PERFORMED
+
+${bizName} agrees to perform the following credit repair services:
+${services}
+
+Services are performed on a per-dispute-round basis. Each round consists of:
+(a) Analysis of the client's current credit reports
+(b) Identification of inaccurate, unverifiable, or outdated items
+(c) Preparation of FCRA-compliant dispute letters
+(d) Submission and tracking of disputes
+(e) Documentation of results
+
+2. COMPENSATION — PAY AFTER DELETION MODEL
+
+In compliance with the Credit Repair Organizations Act (15 U.S.C. § 1679b(b)), NO 
+UPFRONT FEES are charged. All fees are earned ONLY after successful deletion or 
+correction of negative items from the client's credit report, as verified by updated 
+credit report documentation.
+
+Fee per confirmed deletion: $${fee}
+Fee is due within 15 days of confirmation of deletion via updated credit report.
+
+${bizName} does not guarantee the deletion of any specific item, improvement of credit 
+scores, or specific credit outcomes. Credit repair results vary by individual circumstance.
+
+3. DURATION
+
+This agreement begins on the date signed and continues on a month-to-month basis 
+until either party terminates in writing. Client may cancel at any time.
+
+4. CLIENT'S RIGHT TO CANCEL (REQUIRED BY FEDERAL LAW)
+
+You may cancel this contract without penalty or obligation at any time before 
+midnight of the third business day after the date you signed this contract.
+
+CANCELLATION DEADLINE: ${cancelDateStr}
+
+To cancel, mail or deliver a signed, written notice to:
+${bizName}
+${bizAddr}
+
+5. PROHIBITED REPRESENTATIONS
+
+${bizName} will not: (a) make false statements to any person; (b) make any statement 
+or advise the client to make any statement that is untrue or misleading regarding the 
+client's creditworthiness; (c) alter the client's identification to create a new credit 
+identity; (d) charge or receive money before services are fully performed.
+
+6. CLIENT RESPONSIBILITIES
+
+Client agrees to: (a) provide accurate and complete information; (b) promptly provide 
+copies of all bureau responses; (c) notify ${bizName} of any direct creditor contacts; 
+(d) not independently dispute items under active dispute without prior notice.
+
+7. TEXAS LAW
+
+This agreement is governed by Texas law. ${bizName} is registered as a Credit Services 
+Organization with the Texas Secretary of State pursuant to Texas Finance Code § 393.101. 
+Client rights under Texas Finance Code Chapter 393 are incorporated herein.
+
+8. CONSUMER PROTECTION NOTICE
+
+You have a right to dispute inaccurate information in your credit report by contacting 
+the credit bureau directly. There is no fee for filing a dispute with a credit bureau. 
+Credit bureaus are required to investigate disputes at no charge to you.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SIGNATURES
+
+By signing below, both parties agree to the terms of this agreement and acknowledge 
+receipt of the "Consumer Credit File Rights Under State and Federal Law" disclosure.
+
+Client Signature: _________________________ Date: _______________
+Print Name: ${clientName}
+
+Agent Signature: _________________________ Date: _______________
+Print Name: ${agentName || '[Agent Name]'}
+On behalf of: ${bizName}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NOTICE OF RIGHT TO CANCEL
+
+I wish to cancel this Credit Services Agreement.
+
+Client Signature: _________________________ Date: _______________
+Print Name: ${clientName}`;
+
+  document.getElementById('contract-output').style.display = 'block';
+  document.getElementById('contract-text').textContent = contract;
+  toast('Contract generated', 'success');
+}
+
+function generateDisclosure() {
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><title>Consumer Credit File Rights</title>
+    <style>body{font-family:serif;font-size:12pt;margin:1in;line-height:1.8;}</style></head>
+    <body>
+    <h2 style="text-align:center;">CONSUMER CREDIT FILE RIGHTS UNDER STATE AND FEDERAL LAW</h2>
+    <p>You have a right to dispute inaccurate information in your credit report by contacting the credit bureau directly. There is no fee for this. Any credit repair clinic charges a fee for a service that you may perform yourself for free.</p>
+    <p>You have a right to obtain a copy of your credit report from a credit bureau. You may be charged a reasonable fee. There is no fee, however, if you have been turned down for credit, employment, insurance, or a rental dwelling because of information in your credit report within the preceding 60 days. The credit bureau must provide someone to help you interpret the information in your credit file. You are entitled to receive a free copy of your credit report if you are unemployed and intend to apply for employment in the next 60 days, if you are a recipient of public welfare assistance, or if you have reason to believe that there is inaccurate information in your credit report due to fraud.</p>
+    <p>You have a right to sue a credit repair organization that violates the Credit Repair Organization Act. This law prohibits deceptive practices by credit repair organizations.</p>
+    <p>You have the right to cancel your contract with any credit repair organization for any reason within 3 business days from the date you signed it.</p>
+    <p>Credit bureaus are required to follow reasonable procedures to ensure that the information they report is accurate. However, mistakes may occur.</p>
+    <p>You may, on your own, notify a credit bureau in writing that you dispute the accuracy of information in your credit file. The credit bureau must then reinvestigate and modify or remove inaccurate or incomplete information. The credit bureau may not charge any fee for this service. Any pertinent information and copies of all documents you have concerning an error should be given to the credit bureau.</p>
+    <p>If the credit bureau's reinvestigation does not resolve the dispute to your satisfaction, you may send a brief statement to the credit bureau, to be kept in your file, explaining why you think the record is inaccurate. The credit bureau must include a summary of your statement about disputed information with any report it issues about you.</p>
+    <p>The Federal Trade Commission regulates credit bureaus and credit repair organizations. For more information contact:</p>
+    <p>Consumer Response Center — Federal Trade Commission<br>Washington, D.C. 20580 — (202) 326-3758</p>
+    <p>Signed: _________________________ Date: _______________</p>
+    </body></html>
+  `);
+  win.document.close();
+}
+
+function copyContract() {
+  const text = document.getElementById('contract-text').textContent;
+  navigator.clipboard.writeText(text).then(() => toast('Contract copied', 'success'));
+}
+
+function downloadContractPDF() {
+  const text = document.getElementById('contract-text').textContent;
+  const clientName = document.getElementById('contract-client-name').value;
+  const win = window.open('', '_blank');
+  win.document.write(`<html><head><title>Credit Services Agreement - ${clientName}</title><style>body{font-family:'Times New Roman',serif;font-size:12pt;margin:1in;line-height:1.8;white-space:pre-wrap;}</style></head><body>${text}</body></html>`);
+  win.document.close();
+  setTimeout(() => win.print(), 500);
+}
+
+// ============================================================
+// BILLING
+// ============================================================
+function logDeletion() {
+  const client = document.getElementById('bill-client').value;
+  const item = document.getElementById('bill-item').value;
+  const amount = Number(document.getElementById('bill-amount').value);
+  const date = document.getElementById('bill-date').value;
+
+  if (!client || !item || !amount) { toast('Fill all fields', 'error'); return; }
+
+  const entry = { id: Date.now(), client, item, amount, date, invoiceNum: `INV-${Date.now()}` };
+  STATE.billing.push(entry);
+  saveState();
+  renderBilling();
+  updateDashboard();
+  toast(`Deletion logged — Invoice ${entry.invoiceNum} generated`, 'success');
+}
+
+function renderBilling() {
+  const ledger = document.getElementById('billing-ledger');
+  if (!ledger) return;
+  if (!STATE.billing.length) {
+    ledger.innerHTML = '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:24px;">No invoices yet. Log deletions to generate invoices.</div>';
+    return;
+  }
+
+  const total = STATE.billing.reduce((s, b) => s + b.amount, 0);
+  ledger.innerHTML = `
+    <table>
+      <thead><tr><th>Invoice</th><th>Client</th><th>Item Deleted</th><th>Date</th><th>Amount</th><th></th></tr></thead>
+      <tbody>
+        ${STATE.billing.map(b => `
+          <tr>
+            <td style="font-family:'DM Mono',monospace;font-size:11px;">${b.invoiceNum}</td>
+            <td>${b.client}</td>
+            <td style="font-size:12px;color:var(--text-dim);">${b.item}</td>
+            <td style="font-size:12px;">${b.date}</td>
+            <td style="color:var(--gold);font-weight:600;">$${b.amount}</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="printInvoice('${b.id}')">🖨️ Invoice</button></td>
+          </tr>
+        `).join('')}
+        <tr style="border-top:2px solid var(--gold-border);">
+          <td colspan="4" style="font-weight:600;color:var(--text);">Total Earned</td>
+          <td style="color:var(--gold);font-weight:700;font-size:16px;">$${total}</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+}
+
+function printInvoice(id) {
+  const b = STATE.billing.find(x => x.id == id);
+  if (!b) return;
+  const win = window.open('', '_blank');
+  win.document.write(`
+    <html><head><title>Invoice ${b.invoiceNum}</title>
+    <style>body{font-family:serif;margin:1in;font-size:12pt;}h1{font-size:18pt;}table{width:100%;border-collapse:collapse;margin-top:24pt;}td,th{border:1px solid #ccc;padding:8pt;}.total{font-weight:bold;font-size:14pt;}</style></head>
+    <body>
+    <h1>${STATE.settings.bizName}</h1>
+    <p>${STATE.settings.address} | ${STATE.settings.phone}</p>
+    <hr>
+    <h2>INVOICE</h2>
+    <p>Invoice #: ${b.invoiceNum}</p>
+    <p>Date: ${b.date}</p>
+    <p>Bill To: ${b.client}</p>
+    <table>
+      <tr><th>Description</th><th>Amount</th></tr>
+      <tr><td>Credit Repair Services — Deletion Confirmed<br><small>${b.item}</small></td><td>$${b.amount}</td></tr>
+      <tr><td class="total">TOTAL DUE</td><td class="total">$${b.amount}</td></tr>
+    </table>
+    <p style="margin-top:24pt;font-size:10pt;">Payment due within 15 days of deletion confirmation. Thank you.</p>
+    <p style="font-size:9pt;color:#999;">Per your signed Credit Services Agreement, payment is due only after confirmed deletion. This invoice constitutes proof of service rendered.</p>
+    </body></html>
+  `);
+  win.document.close();
+  setTimeout(() => win.print(), 500);
+}
+
+// ============================================================
+// CLIENTS
+// ============================================================
+function openNewClientModal() {
+  const name = prompt('Client full name:');
+  if (!name) return;
+  const phone = prompt('Phone number:');
+  const email = prompt('Email:');
+  STATE.clients.push({ id: Date.now(), name, phone, email, round: 1, status: 'active', addedAt: new Date().toISOString() });
+  saveState();
+  renderClients();
+  updateDashboard();
+  toast(`Client ${name} added`, 'success');
+}
+
+function renderClients() {
+  const list = document.getElementById('clients-list');
+  if (!list) return;
+  if (!STATE.clients.length) {
+    list.innerHTML = `<div class="empty-state"><span class="empty-state-icon">👤</span><div class="empty-state-text">No clients yet</div><div class="empty-state-sub">Add your first client to get started</div></div>`;
+    return;
+  }
+  list.innerHTML = STATE.clients.map(c => `
+    <div class="client-row">
+      <div class="client-avatar">${c.name[0].toUpperCase()}</div>
+      <div class="client-info">
+        <div class="client-name">${c.name}</div>
+        <div class="client-meta">Round ${c.round} • ${c.email || 'No email'} • ${c.phone || 'No phone'}</div>
+      </div>
+      <span class="status-chip chip-${c.status==='active'?'approved':'pending'}">${c.status}</span>
+    </div>
+  `).join('');
+}
+
+function updateDashboard() {
+  const dashClients = document.getElementById('dash-clients');
+  if (dashClients) dashClients.textContent = STATE.clients.length;
+  const dashRevenue = document.getElementById('dash-revenue');
+  if (dashRevenue) dashRevenue.textContent = '$' + STATE.billing.reduce((s,b)=>s+b.amount,0);
+  const dashActive = document.getElementById('dash-active');
+  if (dashActive) dashActive.textContent = STATE.generatedLetters.filter(l=>!l.approved).length;
+}
+
+// ============================================================
+// CLAUDE API CALL
+// ============================================================
+async function callClaude(prompt, maxTokens = 2000) {
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': STATE.apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API error ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.content.map(c => c.text || '').join('');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  t.innerHTML = `<span>${icons[type]||'ℹ️'}</span> ${msg}`;
+  container.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 4000);
+}
+</script>
+</body>
+</html>
