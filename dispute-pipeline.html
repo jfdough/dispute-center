@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Dispute OS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#C9A84C;--gl:#e8d5a3;--gd:rgba(201,168,76,0.15);
+  --bg:#0a0a0a;--bg2:#111;--bg3:#181818;--bg4:#1f1f1f;
+  --bdr:rgba(201,168,76,0.2);--bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.12);
+  --tx:#f0ead6;--tx2:#9a8f7a;--tx3:#5a5248;
+  --red:#c0392b;--rbg:rgba(192,57,43,0.12);
+  --grn:#27ae60;--gbg:rgba(39,174,96,0.12);
+  --blu:#2980b9;--bbg:rgba(41,128,185,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;min-height:100vh}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--bdr);padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.brand{font-family:'DM Serif Display',serif;font-size:18px;color:var(--gold)}
+.brand em{font-size:10px;color:var(--tx2);font-family:'DM Sans',sans-serif;font-style:normal;letter-spacing:.08em;text-transform:uppercase;margin-left:8px;vertical-align:middle}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0}
+.status-dot.ok{background:var(--grn)}
+.status-label{font-size:11px;color:var(--tx3)}
+
+/* VIEWS */
+.view{display:none}.view.on{display:block}
+.wrap{max-width:900px;margin:0 auto;padding:24px 18px;padding-bottom:40px}
+
+/* SETUP */
+.setup-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:28px;max-width:500px;margin:60px auto}
+.setup-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--gold);margin-bottom:6px}
+.setup-sub{font-size:13px;color:var(--tx2);margin-bottom:22px;line-height:1.6}
+.fi{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fi:last-child{margin-bottom:0}
+.fl{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em}
+.fh{font-size:11px;color:var(--tx3);margin-top:2px}
+input,select,textarea{background:var(--bg3);border:1px solid var(--bd);border-radius:6px;padding:9px 11px;font-size:13px;color:var(--tx);font-family:'DM Sans',sans-serif;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold)}
+select option{background:var(--bg3)}
+textarea{resize:vertical;min-height:72px;line-height:1.5}
+
+/* BUTTONS */
+.btn{padding:9px 18px;font-size:13px;font-weight:600;border-radius:6px;cursor:pointer;border:1px solid var(--bd2);background:transparent;color:var(--tx);font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn:hover{background:var(--bg4);border-color:var(--bdr)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-g{background:var(--gold);color:#000;border-color:var(--gold)}.btn-g:hover{background:#b8942e}
+.btn-sm{padding:5px 11px;font-size:11px}
+.btn-xs{padding:3px 8px;font-size:10px}
+.btn-r{color:var(--red);border-color:rgba(192,57,43,.25)}.btn-r:hover{background:var(--rbg)}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:18px 20px;margin-bottom:14px}
+.card-title{font-size:14px;font-weight:600;color:var(--tx);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ca{font-family:'DM Serif Display',serif;color:var(--gold);margin-right:5px}
+
+/* BADGES */
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600}
+.bg{background:var(--gd);color:var(--gold)}.bgr{background:var(--gbg);color:var(--grn)}
+.br{background:var(--rbg);color:var(--red)}.bb{background:var(--bbg);color:var(--blu)}
+.bz{background:var(--bg4);color:var(--tx2);border:1px solid var(--bd)}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:11px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;margin-bottom:11px}
+
+/* ALERTS */
+.al{padding:10px 13px;border-radius:6px;font-size:12px;margin-bottom:12px;line-height:1.6;border:1px solid}
+.ai{background:var(--gd);border-color:var(--bdr);color:var(--gl)}
+.ad{background:var(--rbg);border-color:rgba(192,57,43,.3);color:#e07070}
+.as{background:var(--gbg);border-color:rgba(39,174,96,.2);color:#6dda9a}
+
+/* MODALS */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
+.md{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:24px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto}
+.md::-webkit-scrollbar{width:3px}.md::-webkit-scrollbar-thumb{background:var(--bdr)}
+.mdt{font-family:'DM Serif Display',serif;font-size:18px;color:var(--gold);margin-bottom:4px}
+.mds{font-size:12px;color:var(--tx2);margin-bottom:16px;line-height:1.5}
+
+/* SPINNER */
+.spinner{width:26px;height:26px;border:2px solid var(--bd);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+.spsm{width:13px;height:13px;border:2px solid var(--bd);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-wrap{padding:40px;text-align:center}
+.loading-title{font-size:14px;color:var(--tx2);margin-bottom:5px}
+.loading-sub{font-size:12px;color:var(--tx3)}
+
+/* CLIENT LIST */
+.cl-item{background:var(--bg2);border:1px solid var(--bd);border-radius:9px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s}
+.cl-item:hover{border-color:var(--bdr);background:var(--bg3)}
+.cl-av{width:36px;height:36px;border-radius:50%;background:var(--gd);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:14px;color:var(--gold);flex-shrink:0}
+.cl-name{font-size:13px;font-weight:600;color:var(--tx)}
+.cl-meta{font-size:11px;color:var(--tx2);margin-top:2px}
+
+/* UPLOAD ZONE */
+.upload-zone{border:2px dashed var(--bdr);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:all .15s;background:var(--bg3)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--gold);background:var(--gd)}
+.upload-zone.has-files{border-color:var(--grn);background:var(--gbg)}
+.upload-icon{font-size:28px;margin-bottom:10px;opacity:.6}
+.upload-title{font-size:14px;font-weight:600;color:var(--tx);margin-bottom:4px}
+.upload-sub{font-size:12px;color:var(--tx2)}
+.file-pill{display:inline-flex;align-items:center;gap:6px;background:var(--bg4);border:1px solid var(--bd2);border-radius:20px;padding:4px 10px;font-size:11px;color:var(--tx2);margin:4px}
+.file-pill button{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:12px;padding:0;line-height:1}
+
+/* ACCOUNT REVIEW */
+.acct-card{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;padding:13px 15px;margin-bottom:8px}
+.acct-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px}
+.acct-name{font-size:13px;font-weight:600;color:var(--tx)}
+.acct-meta{font-size:11px;color:var(--tx2);margin-top:2px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:5px;margin-top:7px}
+.vc{display:flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid var(--bd);border-radius:5px;cursor:pointer;font-size:11px;color:var(--tx2);transition:all .15s}
+.vc:hover{border-color:var(--gold);color:var(--tx)}.vc.on{border-color:var(--gold);color:var(--tx);background:var(--gd)}
+.vc input{accent-color:var(--gold);width:12px;height:12px;flex-shrink:0}
+
+/* OUTPUT */
+.doc-section{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--bd)}
+.doc-section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.doc-section-title{font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.doc-card{background:var(--bg3);border:1px solid var(--bd);border-radius:8px;margin-bottom:10px;overflow:hidden}
+.doc-head{padding:11px 15px;background:var(--bg4);border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.doc-label{font-size:13px;font-weight:600;color:var(--tx)}
+.doc-body{padding:16px 18px;font-size:12.5px;line-height:1.88;color:var(--tx2);white-space:pre-wrap;max-height:460px;overflow-y:auto}
+.doc-body::-webkit-scrollbar{width:3px}.doc-body::-webkit-scrollbar-thumb{background:var(--bdr)}
+
+/* STEP INDICATOR */
+.steps{display:flex;gap:0;margin-bottom:22px;border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.step{flex:1;padding:10px 12px;background:var(--bg2);border-right:1px solid var(--bd);display:flex;align-items:center;gap:7px;cursor:default}
+.step:last-child{border-right:none}
+.step.on{background:var(--gd);border-bottom:2px solid var(--gold)}
+.step.done{background:var(--bg3)}
+.step-n{width:18px;height:18px;border-radius:50%;background:var(--bg4);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--tx2);flex-shrink:0}
+.step.on .step-n{background:var(--gold);color:#000;border-color:var(--gold)}
+.step.done .step-n{background:var(--grn);color:#fff;border-color:var(--grn)}
+.step-l{font-size:11px;font-weight:500;color:var(--tx2)}.step.on .step-l{color:var(--gold)}.step.done .step-l{color:var(--grn)}
+
+/* TRACKER TABLE */
+.tr-wrap{overflow-x:auto}
+.tr-table{width:100%;border-collapse:collapse;font-size:12px;min-width:580px}
+.tr-table th{background:var(--bg3);color:var(--tx2);font-weight:600;text-transform:uppercase;letter-spacing:.05em;font-size:10px;padding:8px 10px;text-align:left;border-bottom:1px solid var(--bd)}
+.tr-table td{padding:8px 10px;border-bottom:1px solid var(--bd);color:var(--tx2);vertical-align:middle}
+.tr-table tr:last-child td{border-bottom:none}
+.sd{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px}
+.sp{background:#e0a020}.ss{background:var(--blu)}.srv{background:var(--grn)}.se{background:var(--red)}
+
+/* BOTTOM NAV (mobile) */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--bdr);z-index:100;padding:6px 0 env(safe-area-inset-bottom)}
+.bnav-inner{display:flex;justify-content:space-around}
+.bni{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 10px;cursor:pointer;border:none;background:transparent;color:var(--tx3);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;flex:1}
+.bni.on{color:var(--gold)}.bni-i{font-size:17px;line-height:1}
+
+/* NAV TABS (desktop) */
+.nav-tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--bd);padding-bottom:0}
+.nt{padding:9px 14px;font-size:13px;font-weight:500;cursor:pointer;color:var(--tx2);border-bottom:2px solid transparent;margin-bottom:-1px;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif;transition:all .15s}
+.nt:hover{color:var(--tx)}.nt.on{color:var(--gold);border-bottom-color:var(--gold);font-weight:600}
+
+/* PROVIDER SELECTOR */
+.provider-sel{display:flex;gap:8px;margin-bottom:16px}
+.prov-opt{flex:1;padding:10px 14px;border:1px solid var(--bd);border-radius:8px;cursor:pointer;text-align:center;transition:all .15s}
+.prov-opt:hover{border-color:var(--bdr)}.prov-opt.on{border-color:var(--gold);background:var(--gd)}
+.prov-name{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:2px}
+.prov-sub{font-size:11px;color:var(--tx2)}
+
+/* EMPTY */
+.emp{text-align:center;padding:28px;color:var(--tx3);font-size:13px}
+
+@media(max-width:600px){
+  .g2,.g3{grid-template-columns:1fr}
+  .bnav{display:block}
+  .nav-tabs{display:none}
+  .wrap{padding:16px 14px;padding-bottom:80px}
+  .steps{flex-direction:column}
+  .step{border-right:none;border-bottom:1px solid var(--bd)}
+}
+</style>
+</head>
+<body>
+
+<!-- SETUP MODAL -->
+<div class="mo" id="setup-mo" style="display:none">
+  <div class="md">
+    <div class="mdt">Connect Dispute OS</div>
+    <div class="mds">Enter your credentials once. Stored in your browser only.</div>
+    <div class="fi">
+      <div class="fl">Supabase project URL</div>
+      <input id="s-url" placeholder="https://[project].supabase.co"/>
+    </div>
+    <div class="fi">
+      <div class="fl">Supabase anon key</div>
+      <input type="password" id="s-key" placeholder="eyJ... or sb_publishable_..."/>
+      <div class="fh">Settings → API → Project API keys → anon/public</div>
+    </div>
+    <div class="fi">
+      <div class="fl">Anthropic API key (optional)</div>
+      <input type="password" id="s-ak" placeholder="sk-ant-..."/>
+    </div>
+    <div class="fi">
+      <div class="fl">OpenAI API key (optional)</div>
+      <input type="password" id="s-ok" placeholder="sk-..."/>
+      <div class="fh">Add at least one AI key</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-g" onclick="saveSetup()">Save & connect</button>
+    </div>
+    <div id="setup-err" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- ADD CLIENT MODAL -->
+<div class="mo" id="add-cl-mo" style="display:none">
+  <div class="md">
+    <div class="mdt">New client</div>
+    <div class="g2">
+      <div class="fi"><div class="fl">Full name</div><input id="nc-n" placeholder="Jane Smith"/></div>
+      <div class="fi"><div class="fl">SSN last 4</div><input id="nc-s" placeholder="0922" maxlength="4"/></div>
+    </div>
+    <div class="g2">
+      <div class="fi"><div class="fl">Email</div><input id="nc-e" placeholder="client@email.com"/></div>
+      <div class="fi"><div class="fl">Phone</div><input id="nc-p" placeholder="(713) 555-0100"/></div>
+    </div>
+    <div class="fi"><div class="fl">Current mailing address</div><input id="nc-a" placeholder="123 Main St, Houston TX 77001"/></div>
+    <div class="fi"><div class="fl">Incorrect addresses on file (semicolons)</div><textarea id="nc-ba" placeholder="1640 25th Ave, Saint Petersburg FL; PO Box 82645, Tampa FL" style="min-height:56px"></textarea></div>
+    <div class="g3">
+      <div class="fi"><div class="fl">TU score</div><input id="nc-tu" type="number" placeholder="592"/></div>
+      <div class="fi"><div class="fl">EQ score</div><input id="nc-eq" type="number" placeholder="600"/></div>
+      <div class="fi"><div class="fl">EX score</div><input id="nc-ex" type="number" placeholder="600"/></div>
+    </div>
+    <div class="fi"><div class="fl">Notes</div><textarea id="nc-nt" placeholder="Goals, context..." style="min-height:56px"></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-g" onclick="saveClient()">Save client</button>
+      <button class="btn" onclick="closeModal('add-cl-mo')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">Dispute OS <em>Pipeline</em></div>
+  <div class="topbar-right">
+    <span class="status-dot" id="conn-dot"></span>
+    <span class="status-label" id="conn-lbl">Not connected</span>
+    <button class="btn btn-sm" onclick="openModal('setup-mo')">Settings</button>
+  </div>
+</div>
+
+<!-- VIEW: PIPELINE -->
+<div class="view on" id="v-pipe">
+  <div class="wrap">
+
+    <!-- CLIENT SELECT / HEADER -->
+    <div id="pipe-header" style="margin-bottom:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <div>
+          <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--tx)" id="pipe-title">Dispute Pipeline</div>
+          <div style="font-size:12px;color:var(--tx2)" id="pipe-sub">Select a client to start</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select id="client-sel" style="width:200px" onchange="selectClient(this.value)">
+            <option value="">— Select client —</option>
+          </select>
+          <button class="btn btn-sm btn-g" onclick="openModal('add-cl-mo')">+ New client</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEPS -->
+    <div class="steps">
+      <div class="step on" id="st1"><div class="step-n">1</div><div class="step-l">Upload report</div></div>
+      <div class="step" id="st2"><div class="step-n">2</div><div class="step-l">Review accounts</div></div>
+      <div class="step" id="st3"><div class="step-n">3</div><div class="step-l">Generate package</div></div>
+      <div class="step" id="st4"><div class="step-n">4</div><div class="step-l">Download & send</div></div>
+    </div>
+
+    <!-- STEP 1: UPLOAD -->
+    <div id="s1">
+      <div class="card">
+        <div class="card-title"><span class="ca">01</span> Upload credit report</div>
+        <div class="al ai" style="margin-bottom:14px">Accepts PDFs from AnnualCreditReport.com, Credit Hero Score, myFICO, or screenshots. Upload multiple files if needed — Claude reads them all together.</div>
+
+        <div class="fi" style="margin-bottom:14px">
+          <div class="fl">AI Provider</div>
+          <div class="provider-sel" id="prov-sel">
+            <div class="prov-opt on" id="prov-claude" onclick="setProv('claude')">
+              <div class="prov-name">Claude</div>
+              <div class="prov-sub">Anthropic Sonnet</div>
+            </div>
+            <div class="prov-opt" id="prov-openai" onclick="setProv('openai')">
+              <div class="prov-name">GPT-4o</div>
+              <div class="prov-sub">OpenAI</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFiles(event)">
+          <div class="upload-icon">📄</div>
+          <div class="upload-title" id="upload-title">Click to upload or drag & drop</div>
+          <div class="upload-sub">PDF or screenshots — AnnualCreditReport, Credit Hero, myFICO, any source</div>
+          <div id="file-pills" style="margin-top:10px"></div>
+        </div>
+        <input type="file" id="file-input" accept=".pdf,image/*" multiple style="display:none" onchange="filesSelected(this.files)"/>
+
+        <div class="fi" style="margin-top:14px">
+          <div class="fl">Round number</div>
+          <select id="round-sel">
+            <option value="1">Round 1 — Initial dispute</option>
+            <option value="2">Round 2 — Reinvestigation (bureau claimed verification)</option>
+            <option value="3">Round 3 — Method of verification demand</option>
+          </select>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-g" id="extract-btn" onclick="extractAccounts()" disabled>Extract accounts →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: REVIEW ACCOUNTS -->
+    <div id="s2" style="display:none">
+      <div class="al ai">Claude extracted these accounts from the report. Review, edit, remove any that look wrong, then generate the full package.</div>
+      <div id="accts-review"></div>
+      <div class="btn-row">
+        <button class="btn btn-g" onclick="goGenerate()">Generate dispute package →</button>
+        <button class="btn" onclick="goStep(1)">← Re-upload</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: GENERATE -->
+    <div id="s3" style="display:none">
+      <div class="card" style="text-align:center;padding:40px">
+        <div class="spinner" id="gen-spinner"></div>
+        <div style="font-size:14px;color:var(--tx2);margin-bottom:5px" id="gen-status">Generating dispute package...</div>
+        <div style="font-size:12px;color:var(--tx3)" id="gen-sub">Bureau letters · Furnisher letters · FDCPA · CFPB · FTC · Texas AG · Mail log</div>
+      </div>
+    </div>
+
+    <!-- STEP 4: OUTPUT -->
+    <div id="s4" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px">
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--tx)" id="out-title">Dispute package ready</div>
+          <div style="font-size:12px;color:var(--tx2);margin-top:2px" id="out-sub"></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-sm" onclick="copyAll()">Copy all</button>
+          <button class="btn btn-sm btn-g" onclick="downloadCase()">Download case file</button>
+          <button class="btn btn-sm" onclick="printAll()">Print all</button>
+          <button class="btn btn-sm" onclick="goStep(1)">New round</button>
+        </div>
+      </div>
+      <div id="output-body"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- VIEW: CLIENTS -->
+<div class="view" id="v-clients">
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--tx)">Clients</div>
+      <button class="btn btn-g btn-sm" onclick="openModal('add-cl-mo')">+ New client</button>
+    </div>
+    <div id="cl-list"><div class="emp">No clients yet. Add your first client.</div></div>
+  </div>
+</div>
+
+<!-- VIEW: TRACKER -->
+<div class="view" id="v-tracker">
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--tx)">Follow-up tracker</div>
+      <button class="btn btn-g btn-sm" onclick="openAddTracker()">+ Add entry</button>
+    </div>
+    <div id="add-tr-form" style="display:none" class="card">
+      <div class="g3">
+        <div class="fi"><div class="fl">Client</div><input id="tr-c" placeholder="Client name"/></div>
+        <div class="fi"><div class="fl">Sent to</div><input id="tr-e" placeholder="TransUnion"/></div>
+        <div class="fi"><div class="fl">Type</div>
+          <select id="tr-t">
+            <option>Bureau dispute letter</option><option>Furnisher letter</option>
+            <option>FDCPA validation</option><option>CFPB complaint</option>
+            <option>FTC report</option><option>Texas AG complaint</option>
+          </select>
+        </div>
+      </div>
+      <div class="g3">
+        <div class="fi"><div class="fl">Date sent</div><input id="tr-s" type="date"/></div>
+        <div class="fi"><div class="fl">Certified mail #</div><input id="tr-m" placeholder="9400..."/></div>
+        <div class="fi"><div class="fl">Deadline</div><input id="tr-d" type="date"/></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-g" onclick="saveTracker()">Save</button>
+        <button class="btn" onclick="document.getElementById('add-tr-form').style.display='none'">Cancel</button>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="tr-wrap">
+        <table class="tr-table">
+          <thead><tr><th>Client / Entity</th><th>Type</th><th>Sent</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tr-body"><tr><td colspan="6" class="emp">No entries yet</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DESKTOP NAV (injected into each view) -->
+<script>
+// ================================================================
+// GLOBALS
+// ================================================================
+let SB_URL = localStorage.getItem('dos_sb_url')||'';
+let SB_KEY = localStorage.getItem('dos_sb_key')||'';
+let ANT_KEY = localStorage.getItem('dos_ant_key')||'';
+let OAI_KEY = localStorage.getItem('dos_oai_key')||'';
+let PROVIDER = localStorage.getItem('dos_provider')||'claude';
+
+let CLIENTS = [];
+let TRACKER_ROWS = [];
+let ACTIVE_CLIENT = null;
+let UPLOADED_FILES = [];
+let EXTRACTED_ACCOUNTS = [];
+let GENERATED_DOCS = {};
+let CURRENT_ROUND = 1;
+
+// ================================================================
+// SUPABASE
+// ================================================================
+async function sb(method, table, body=null, params=''){
+  if(!SB_URL||!SB_KEY) return null;
+  try{
+    const opts = {
+      method,
+      headers:{
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': method==='POST'?'return=representation':(method==='PATCH'?'return=representation':'')
+      }
+    };
+    if(body && method !== 'GET') opts.body = JSON.stringify(body);
+    const url = `${SB_URL}/rest/v1/${table}${params?'?'+params:''}`;
+    const r = await fetch(url, opts);
+    if(!r.ok){
+      const err = await r.text();
+      console.error('Supabase error:', r.status, err);
+      return null;
+    }
+    const text = await r.text();
+    return text ? JSON.parse(text) : [];
+  } catch(e){ console.error('SB error:', e); return null; }
+}
+
+async function testConn(){
+  if(!SB_URL||!SB_KEY){ updConn(false); return false; }
+  const r = await sb('GET','dispute_clients',null,'limit=1');
+  if(r !== null){ updConn(true); return true; }
+  else { updConn(false); return false; }
+}
+
+function updConn(ok){
+  document.getElementById('conn-dot').className = 'status-dot'+(ok?' ok':'');
+  document.getElementById('conn-lbl').textContent = ok?'Connected':'Not connected';
+}
+
+// ================================================================
+// SETUP
+// ================================================================
+async function saveSetup(){
+  const url = document.getElementById('s-url').value.trim().replace(/\/$/,'');
+  const key = document.getElementById('s-key').value.trim();
+  const ak = document.getElementById('s-ak').value.trim();
+  const ok = document.getElementById('s-ok').value.trim();
+  const el = document.getElementById('setup-err');
+
+  if(!url||!key){ el.innerHTML='<div class="al ad">Enter Supabase URL and key</div>'; return; }
+  if(!ak&&!ok){ el.innerHTML='<div class="al ad">Add at least one AI API key</div>'; return; }
+
+  SB_URL=url; SB_KEY=key;
+  if(ak){ ANT_KEY=ak; localStorage.setItem('dos_ant_key',ak); }
+  if(ok){ OAI_KEY=ok; localStorage.setItem('dos_oai_key',ok); }
+  localStorage.setItem('dos_sb_url',url);
+  localStorage.setItem('dos_sb_key',key);
+
+  el.innerHTML='<span class="spsm"></span>Testing connection...';
+  const ok2 = await testConn();
+  if(ok2){
+    el.innerHTML='<div class="al as">Connected successfully</div>';
+    setTimeout(()=>closeModal('setup-mo'),800);
+    await loadClients();
+  } else {
+    el.innerHTML='<div class="al ad">Connection failed. Check URL and key — make sure you\'re using the anon/public key, not service_role.</div>';
+  }
+}
+
+// ================================================================
+// MODALS
+// ================================================================
+function openModal(id){ document.getElementById(id).style.display='flex'; }
+function closeModal(id){ document.getElementById(id).style.display='none'; }
+
+// ================================================================
+// VIEWS
+// ================================================================
+function showView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));
+  document.getElementById('v-'+v).classList.add('on');
+  document.getElementById('bn-'+v)?.classList.add('on');
+  // Update nav tab active states
+  document.querySelectorAll('.nav-tabs .nt').forEach(btn=>{
+    btn.classList.remove('on');
+    if(btn.getAttribute('onclick')?.includes("'"+v+"'")){
+      btn.classList.add('on');
+    }
+  });
+  if(v==='clients') renderClients();
+  if(v==='tracker'){ loadTracker(); }
+}
+
+// ================================================================
+// CLIENTS
+// ================================================================
+async function loadClients(){
+  const rows = await sb('GET','dispute_clients',null,'order=created_at.desc');
+  if(rows){ CLIENTS=rows; renderClients(); populateClientSel(); }
+}
+
+function populateClientSel(){
+  const sel = document.getElementById('client-sel');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— Select client —</option>';
+  CLIENTS.forEach(c=>{
+    const opt = document.createElement('option');
+    opt.value=c.id; opt.textContent=c.name;
+    if(c.id===cur) opt.selected=true;
+    sel.appendChild(opt);
+  });
+}
+
+function selectClient(id){
+  ACTIVE_CLIENT = CLIENTS.find(c=>c.id===id)||null;
+  if(ACTIVE_CLIENT){
+    document.getElementById('pipe-title').textContent = ACTIVE_CLIENT.name+' — Dispute Pipeline';
+    document.getElementById('pipe-sub').textContent = `TU:${ACTIVE_CLIENT.score_tu||'—'} EQ:${ACTIVE_CLIENT.score_eq||'—'} EX:${ACTIVE_CLIENT.score_ex||'—'}`;
+  } else {
+    document.getElementById('pipe-title').textContent = 'Dispute Pipeline';
+    document.getElementById('pipe-sub').textContent = 'Select a client to start';
+  }
+}
+
+async function saveClient(){
+  const name = document.getElementById('nc-n').value.trim();
+  if(!name){ alert('Enter client name'); return; }
+  const body = {
+    name,
+    ssn_last4: document.getElementById('nc-s').value.trim(),
+    email: document.getElementById('nc-e').value.trim(),
+    phone: document.getElementById('nc-p').value.trim(),
+    address: document.getElementById('nc-a').value.trim(),
+    bad_addresses: document.getElementById('nc-ba').value.trim(),
+    score_tu: parseInt(document.getElementById('nc-tu').value)||null,
+    score_eq: parseInt(document.getElementById('nc-eq').value)||null,
+    score_ex: parseInt(document.getElementById('nc-ex').value)||null,
+    notes: document.getElementById('nc-nt').value.trim(),
+    status: 'active',
+    report_date: new Date().toISOString().split('T')[0]
+  };
+  const r = await sb('POST','dispute_clients',body);
+  if(r&&r[0]){
+    closeModal('add-cl-mo');
+    ['nc-n','nc-s','nc-e','nc-p','nc-a','nc-ba','nc-tu','nc-eq','nc-ex','nc-nt'].forEach(id=>document.getElementById(id).value='');
+    await loadClients();
+    selectClient(r[0].id);
+    document.getElementById('client-sel').value = r[0].id;
+  } else {
+    alert('Error saving client. Check Supabase connection.');
+  }
+}
+
+function renderClients(){
+  const el = document.getElementById('cl-list');
+  if(!CLIENTS.length){ el.innerHTML='<div class="emp">No clients yet. Add your first client above.</div>'; return; }
+  el.innerHTML = CLIENTS.map(c=>`
+    <div class="cl-item" onclick="selectClientAndGo('${c.id}')">
+      <div class="cl-av">${ini(c.name)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="cl-name">${c.name}</div>
+        <div class="cl-meta">${c.address||'No address'}</div>
+        <div style="margin-top:4px">
+          <span class="badge bz">TU:${c.score_tu||'—'}</span>
+          <span class="badge bz">EQ:${c.score_eq||'—'}</span>
+          <span class="badge bz">EX:${c.score_ex||'—'}</span>
+          <span class="badge ${c.status==='active'?'bgr':'bz'}">${c.status||'active'}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function selectClientAndGo(id){
+  selectClient(id);
+  document.getElementById('client-sel').value = id;
+  showView('pipe');
+  goStep(1);
+}
+
+// ================================================================
+// FILE UPLOAD
+// ================================================================
+function dragOver(e){ e.preventDefault(); document.getElementById('upload-zone').classList.add('drag'); }
+function dragLeave(e){ document.getElementById('upload-zone').classList.remove('drag'); }
+function dropFiles(e){
+  e.preventDefault();
+  dragLeave(e);
+  filesSelected(e.dataTransfer.files);
+}
+
+function filesSelected(fileList){
+  const newFiles = Array.from(fileList);
+  UPLOADED_FILES = [...UPLOADED_FILES, ...newFiles];
+  renderFilePills();
+  document.getElementById('extract-btn').disabled = UPLOADED_FILES.length === 0;
+  if(UPLOADED_FILES.length>0){
+    document.getElementById('upload-zone').classList.add('has-files');
+    document.getElementById('upload-title').textContent = `${UPLOADED_FILES.length} file${UPLOADED_FILES.length>1?'s':''} ready`;
+  }
+}
+
+function removeFile(idx){
+  UPLOADED_FILES.splice(idx,1);
+  renderFilePills();
+  if(UPLOADED_FILES.length===0){
+    document.getElementById('upload-zone').classList.remove('has-files');
+    document.getElementById('upload-title').textContent = 'Click to upload or drag & drop';
+    document.getElementById('extract-btn').disabled = true;
+  }
+}
+
+function renderFilePills(){
+  document.getElementById('file-pills').innerHTML = UPLOADED_FILES.map((f,i)=>`
+    <span class="file-pill">
+      ${f.type.includes('pdf')?'📄':'🖼️'} ${f.name.substring(0,30)}${f.name.length>30?'...':''}
+      <button onclick="event.stopPropagation();removeFile(${i})">✕</button>
+    </span>`).join('');
+}
+
+function setProv(p){
+  PROVIDER=p;
+  localStorage.setItem('dos_provider',p);
+  document.querySelectorAll('.prov-opt').forEach(el=>el.classList.remove('on'));
+  document.getElementById('prov-'+p).classList.add('on');
+}
+
+// ================================================================
+// EXTRACT ACCOUNTS
+// ================================================================
+async function extractAccounts(){
+  if(!UPLOADED_FILES.length){ alert('Upload at least one file first'); return; }
+  if(!ACTIVE_CLIENT){ alert('Select a client first'); return; }
+
+  const key = PROVIDER==='claude'?ANT_KEY:OAI_KEY;
+  if(!key){ alert(`No ${PROVIDER==='claude'?'Anthropic':'OpenAI'} API key. Add it in Settings.`); return; }
+
+  goStep(3);
+  document.getElementById('s2').style.display='none';
+  document.getElementById('s3').style.display='block';
+  document.getElementById('gen-status').textContent = 'Reading credit report...';
+  document.getElementById('gen-sub').textContent = 'Extracting accounts and identifying violations';
+
+  const c = ACTIVE_CLIENT;
+  const badAddr = c.bad_addresses||'';
+
+  // Convert files to base64
+  const fileContents = await Promise.all(UPLOADED_FILES.map(f => fileToBase64(f)));
+
+  const systemPrompt = `You are an expert credit dispute analyst. Parse this credit report and extract all accounts. For each account identify specific disputable violations.
+
+DISPUTE IDENTIFICATION — flag an account if ANY of these are true:
+- Status differs between bureaus (Charge-off on TU but Open/Good Standing on EQ = major violation)
+- Payment history contradicts between bureaus (0 lates on TU, 8 lates on EQ/EX for same account — cite the specific numbers)
+- Collection agency name differs across bureaus for same account number
+- Account only appears on 1-2 bureaus instead of all 3
+- No payment history / zero months reviewed
+- Dispute remark still showing (Consumer Disagrees, Dispute Resolved - Consumer Disagrees)
+- Balance over 7 years old (past FCRA §1681c window)
+- Addresses on file consumer has never lived at
+- Name variation between bureaus
+
+DO NOT flag: Good standing accounts consistent across all bureaus. Clean student loans with no violations. Recent open accounts with clean history.
+
+Return ONLY valid JSON — no markdown, no preamble:
+{
+  "client_name": "string",
+  "scores": {"transunion": number_or_null, "equifax": number_or_null, "experian": number_or_null, "report_date": "YYYY-MM-DD"},
+  "personal_info": {
+    "has_mixed_file": boolean,
+    "unknown_addresses": ["string"],
+    "name_variations": ["string"],
+    "notes": "string"
+  },
+  "accounts": [
+    {
+      "creditor": "string",
+      "account_number": "string",
+      "account_type": "Charge-off|Collection|Late payments|Duplicate|Incorrect balance|Incorrect status|Student loan|Other",
+      "bureaus_reporting": ["TransUnion","Equifax","Experian"],
+      "status_by_bureau": {"TransUnion":"string","Equifax":"string","Experian":"string"},
+      "balance": number_or_null,
+      "dispute_recommended": true_or_false,
+      "violations": ["cross_bureau","payment_conflict","wrong_agency","wrong_balance","one_bureau","no_history","wrong_status","dispute_remark","too_old","wrong_dofd","mixed_file","unverifiable"],
+      "violation_detail": "exact specific inconsistency — quote bureau-specific data",
+      "letter_targets": ["TransUnion","Equifax","Experian"]
+    }
+  ],
+  "summary": {
+    "total_accounts": number,
+    "dispute_count": number,
+    "analyst_notes": "string"
+  }
+}`;
+
+  const userText = `Client: ${c.name}
+SSN last 4: ${c.ssn_last4||'on file'}
+Address: ${c.address||'on file'}
+${badAddr?'Incorrect addresses on file: '+badAddr:''}
+Round: ${document.getElementById('round-sel').value}
+Date: ${new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+
+Parse this complete credit report. Extract every account across all three bureaus. Flag every disputable item. Return only the JSON.`;
+
+  try {
+    let result;
+    if(PROVIDER==='claude'){
+      result = await callClaude(key, systemPrompt, userText, fileContents);
+    } else {
+      result = await callOpenAI(key, systemPrompt, userText, fileContents);
+    }
+
+    // Parse JSON from response
+    let data;
+    try {
+      const clean = result.replace(/```json|```/g,'').trim();
+      const s = clean.indexOf('{'); const e = clean.lastIndexOf('}');
+      data = JSON.parse(s>-1 ? clean.slice(s,e+1) : clean);
+    } catch(pe) {
+      throw new Error('Could not parse AI response as JSON. Try again.');
+    }
+
+    EXTRACTED_ACCOUNTS = data.accounts||[];
+
+    // Update client scores if found
+    if(data.scores && SB_URL){
+      const scoreUpdate = {};
+      if(data.scores.transunion) scoreUpdate.score_tu = data.scores.transunion;
+      if(data.scores.equifax) scoreUpdate.score_eq = data.scores.equifax;
+      if(data.scores.experian) scoreUpdate.score_ex = data.scores.experian;
+      if(Object.keys(scoreUpdate).length){
+        await sb('PATCH','dispute_clients',scoreUpdate,`id=eq.${c.id}`);
+        Object.assign(ACTIVE_CLIENT, scoreUpdate);
+      }
+    }
+
+    document.getElementById('s3').style.display='none';
+    document.getElementById('s2').style.display='block';
+    renderAccountReview(data);
+    markStep(2);
+
+  } catch(e) {
+    document.getElementById('s3').style.display='none';
+    document.getElementById('s2').style.display='block';
+    document.getElementById('accts-review').innerHTML = `<div class="al ad">Error: ${e.message}</div><div class="btn-row"><button class="btn" onclick="goStep(1)">← Back</button></div>`;
+  }
+}
+
+async function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = e => res({ name:file.name, type:file.type, data:e.target.result.split(',')[1] });
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function callClaude(key, system, userText, files){
+  const content = [];
+  files.forEach(f=>{
+    if(f.type.includes('pdf')){
+      content.push({ type:'document', source:{ type:'base64', media_type:'application/pdf', data:f.data } });
+    } else {
+      const mt = f.type||'image/jpeg';
+      content.push({ type:'image', source:{ type:'base64', media_type:mt, data:f.data } });
+    }
+  });
+  content.push({ type:'text', text:userText });
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-calls':'true'
+    },
+    body: JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:4000,
+      system,
+      messages:[{ role:'user', content }]
+    })
+  });
+  const d = await resp.json();
+  if(d.error) throw new Error(d.error.message);
+  return d.content?.filter(c=>c.type==='text').map(c=>c.text).join('')||'';
+}
+
+async function callOpenAI(key, system, userText, files){
+  const content = [];
+  files.forEach(f=>{
+    if(f.type.includes('pdf')){
+      // OpenAI doesn't support PDF directly — convert hint to user
+      content.push({ type:'text', text:`[PDF file: ${f.name}]` });
+    } else {
+      content.push({ type:'image_url', image_url:{ url:`data:${f.type};base64,${f.data}` } });
+    }
+  });
+  content.push({ type:'text', text:userText });
+
+  const resp = await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${key}` },
+    body: JSON.stringify({
+      model:'gpt-4o',
+      max_tokens:4000,
+      messages:[
+        { role:'system', content:system },
+        { role:'user', content }
+      ]
+    })
+  });
+  const d = await resp.json();
+  if(d.error) throw new Error(d.error.message);
+  return d.choices?.[0]?.message?.content||'';
+}
+
+// ================================================================
+// ACCOUNT REVIEW
+// ================================================================
+const VM = {
+  cross_bureau:'Cross-bureau inconsistency',
+  payment_conflict:'Payment history conflict across bureaus',
+  wrong_agency:'Different collection agency name across bureaus',
+  wrong_balance:'Balance discrepancy',
+  one_bureau:'Only on one bureau',
+  no_history:'No payment history',
+  wrong_status:'Wrong account status',
+  dispute_remark:'Dispute remark still showing',
+  too_old:'Past 7-year window',
+  wrong_dofd:'Wrong date of first delinquency',
+  mixed_file:'Mixed file / wrong identity',
+  unverifiable:'Unverifiable'
+};
+
+function renderAccountReview(data){
+  const disp = EXTRACTED_ACCOUNTS.filter(a=>a.dispute_recommended);
+  const clean = EXTRACTED_ACCOUNTS.filter(a=>!a.dispute_recommended);
+
+  let html = '';
+
+  if(data.personal_info?.has_mixed_file){
+    html += `<div class="al ad" style="margin-bottom:14px"><b>Mixed file indicators detected.</b> Unknown addresses: ${(data.personal_info.unknown_addresses||[]).join('; ')||'see below'}. Address dispute will be included in letters.</div>`;
+  }
+
+  if(data.summary?.analyst_notes){
+    html += `<div class="al ai" style="margin-bottom:14px"><b>Analyst notes:</b> ${data.summary.analyst_notes}</div>`;
+  }
+
+  html += `<div style="font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">${disp.length} account${disp.length!==1?'s':''} to dispute</div>`;
+
+  disp.forEach((a,i)=>{
+    html += `<div class="acct-card" id="acct-${i}">
+      <div class="acct-head">
+        <div>
+          <div class="acct-name">${a.creditor}${a.account_number?' · '+a.account_number:''}</div>
+          <div class="acct-meta">${a.account_type} · ${(a.bureaus_reporting||[]).join(', ')}</div>
+        </div>
+        <div style="display:flex;gap:5px;align-items:flex-start">
+          <span class="badge br">${(a.violations||[]).length} flag${(a.violations||[]).length!==1?'s':''}</span>
+          <button class="btn btn-xs btn-r" onclick="removeAcct(${i})">Remove</button>
+        </div>
+      </div>
+      ${a.violation_detail?`<div style="font-size:12px;color:var(--tx2);margin-bottom:8px;font-style:italic;line-height:1.5">${a.violation_detail}</div>`:''}
+      <div style="font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Violation flags</div>
+      <div class="vgrid">
+        ${Object.entries(VM).map(([k,v])=>`
+          <label class="vc ${(a.violations||[]).includes(k)?'on':''}">
+            <input type="checkbox" ${(a.violations||[]).includes(k)?'checked':''} onchange="toggleViolation(${i},'${k}',this.checked)"/>
+            ${v}
+          </label>`).join('')}
+      </div>
+      <div class="fi" style="margin-top:10px;margin-bottom:0">
+        <div class="fl">Additional notes</div>
+        <textarea style="min-height:52px" placeholder="Any extra context about this account..." onchange="EXTRACTED_ACCOUNTS.filter(a=>a.dispute_recommended)[${i}].extra_notes=this.value">${a.extra_notes||''}</textarea>
+      </div>
+    </div>`;
+  });
+
+  if(clean.length){
+    html += `<div style="font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin:16px 0 8px">${clean.length} account${clean.length!==1?'s':''} not disputed (good standing)</div>`;
+    html += clean.map(a=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg3);border:1px solid var(--bd);border-radius:6px;margin-bottom:6px;font-size:12px">
+        <span style="color:var(--tx2)">${a.creditor}${a.account_number?' · '+a.account_number:''}</span>
+        <span class="badge bgr">Good standing</span>
+      </div>`).join('');
+  }
+
+  document.getElementById('accts-review').innerHTML = html;
+
+  // Wire up vcheck toggle styling
+  document.querySelectorAll('.vc input').forEach(cb=>{
+    cb.addEventListener('change', function(){ this.closest('.vc').classList.toggle('on',this.checked); });
+  });
+}
+
+function toggleViolation(idx, key, checked){
+  const disputed = EXTRACTED_ACCOUNTS.filter(a=>a.dispute_recommended);
+  const acct = disputed[idx];
+  if(!acct.violations) acct.violations=[];
+  if(checked){ if(!acct.violations.includes(key)) acct.violations.push(key); }
+  else { acct.violations = acct.violations.filter(v=>v!==key); }
+}
+
+function removeAcct(idx){
+  const disputed = EXTRACTED_ACCOUNTS.filter(a=>a.dispute_recommended);
+  const acct = disputed[idx];
+  acct.dispute_recommended = false;
+  renderAccountReview({ personal_info:{}, summary:{} });
+}
+
+// ================================================================
+// GENERATE PACKAGE
+// ================================================================
+async function goGenerate(){
+  const disputed = EXTRACTED_ACCOUNTS.filter(a=>a.dispute_recommended);
+  if(!disputed.length){ alert('No accounts selected for dispute'); return; }
+
+  const key = PROVIDER==='claude'?ANT_KEY:OAI_KEY;
+  if(!key){ alert(`No ${PROVIDER==='claude'?'Anthropic':'OpenAI'} API key`); return; }
+
+  document.getElementById('s2').style.display='none';
+  document.getElementById('s3').style.display='block';
+  markStep(3);
+  document.getElementById('gen-status').textContent = 'Writing dispute letters...';
+  document.getElementById('gen-sub').textContent = 'Bureau letters · Furnisher · FDCPA · CFPB · FTC · Texas AG';
+
+  const c = ACTIVE_CLIENT;
+  const round = document.getElementById('round-sel').value;
+  const dateStr = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  const byBureau = {};
+  disputed.forEach(a=>(a.letter_targets||a.bureaus_reporting||[]).forEach(b=>{
+    if(!byBureau[b]) byBureau[b]=[];
+    byBureau[b].push(a);
+  }));
+  const collections = disputed.filter(a=>a.account_type==='Collection');
+
+  const acctDetails = disputed.map(a=>{
+    const vmap = { cross_bureau:'Account reported differently across bureaus — cross-bureau inconsistency makes verification impossible under FCRA §1681e(b)', payment_conflict:'Payment history directly contradicts between bureaus — cite exact numbers per bureau', wrong_agency:'Collection agency name differs across bureaus for same account number', wrong_balance:'Balance inconsistency across bureaus', one_bureau:'Only appears on one bureau — consistent verification would show across all three', no_history:'No payment history / zero months reviewed', wrong_status:'Account status is factually incorrect', dispute_remark:'Dispute remark still showing after prior dispute', too_old:'Past 7-year FCRA reporting window under §1681c', wrong_dofd:'Date of first delinquency incorrect', mixed_file:'Personal info inconsistency / mixed file indicators', unverifiable:'Cannot be verified with original documentation' };
+    const flags = (a.violations||[]).map(v=>vmap[v]).filter(Boolean).join('; ');
+    return `ACCOUNT: ${a.creditor}${a.account_number?' (Acct: '+a.account_number+')':''} | TYPE: ${a.account_type} | BUREAUS: ${(a.bureaus_reporting||[]).join(', ')} | VIOLATIONS: ${flags||'inaccurate reporting'}${a.violation_detail?' | DETAIL: '+a.violation_detail:''}${a.extra_notes?' | NOTES: '+a.extra_notes:''}`;
+  }).join('\n');
+
+  const roundCtx = {
+    '1':'Round 1 — Initial dispute. First time disputing these items. Do not reference prior disputes. Be thorough and specific.',
+    '2':'Round 2 — Reinvestigation. Bureau previously claimed verification. Reference the prior dispute. Challenge the adequacy of their verification. Demand they explain exactly how they verified. Escalate legal pressure.',
+    '3':'Round 3 — Method of Verification. Demand under FCRA §1681i(a)(7) the exact method used to verify each disputed item. Two prior disputes filed. State that if verification method cannot be provided, deletion is legally required.'
+  };
+
+  const badAddr = c.bad_addresses||'';
+  const bureauAddrs = { TransUnion:'TransUnion Consumer Disputes\nP.O. Box 2000\nChester, PA 19016', Equifax:'Equifax Information Services LLC\nP.O. Box 740256\nAtlanta, GA 30374-0256', Experian:'Experian Dispute Center\nP.O. Box 4500\nAllen, TX 75013' };
+
+  const prompt = `You are an expert credit dispute attorney's letter writer. Generate a complete dispute package. DELETION IS ALWAYS THE GOAL — every letter demands full deletion of unverifiable items.
+
+CLIENT:
+Name: ${c.name}
+SSN: XXX-XX-${c.ssn_last4||'XXXX'}
+Address: ${c.address||'[ADDRESS]'}
+${c.phone?'Phone: '+c.phone:''}
+Date: ${dateStr}
+${badAddr?'\nINCORRECT ADDRESSES ON FILE: '+badAddr:''}
+
+ROUND: ${roundCtx[round]}
+TONE: Assertive — reference FCRA §1681n (actual damages, up to $1,000/violation statutory, punitive, attorney fees) and §1681o. If Round 1 tone is firm but professional; Round 2+ is escalated with explicit legal consequence language.
+
+DISPUTED ACCOUNTS:
+${acctDetails}
+
+BUREAUS TARGETED:
+${Object.entries(byBureau).map(([b,aa])=>`${b}: ${aa.map(a=>a.creditor).join(', ')}`).join('\n')}
+
+GENERATE ALL SECTIONS BELOW. Use exact delimiters on their own line.
+
+--- BUREAU DISPUTE LETTERS ---
+One complete letter per bureau. Each letter must be UNIQUE — different opening, different paragraph structure, different sentence patterns. Never copy-paste between letters.
+Rules:
+- DELETION demanded in every letter — not correction, not update
+- For cross-bureau inconsistencies: quote exact data from each bureau ("TransUnion reports 0 late payments across 48 reviewed months while Equifax reports 1 payment 30 days late, 3 payments 60 days late, and 4 payments 90 days late for the same Capital One account")
+- For payment conflicts: use the clean bureau's record as direct evidence against the adverse bureau
+- FCRA: §1681e(b) accuracy, §1681i reinvestigation, §1681i(a)(5)(A) deletion of unverifiable, §1681s-2 furnisher duty
+- Multiple accounts = numbered items in one letter
+${badAddr?'- Include numbered item for address disputes demanding removal of each unrecognized address\n':''}
+- Close: demand written results in 30 days + deletion per §1681i(a)(5)(A) + updated credit report after corrections
+- Bureau mailing addresses: ${Object.entries(bureauAddrs).map(([b,a])=>b+': '+a.replace(/\n/g,' ')).join(' | ')}
+===BUREAU_LETTER:[BUREAU NAME]===
+
+--- FURNISHER DIRECT DISPUTE LETTERS ---
+One letter per unique creditor/collection agency directly to the furnisher. Under FCRA §1681s-2(b) furnishers must investigate disputes received directly from consumers.
+- Reference what is being reported, why it is inaccurate or unverifiable
+- For payment conflicts: quote the specific numbers that contradict their reporting
+- Demand they correct or delete at source and update all bureaus
+- Note simultaneous bureau dispute filed same day
+===FURNISHER_LETTER:[CREDITOR NAME]===
+
+${collections.length?`--- FDCPA DEBT VALIDATION LETTERS ---
+One letter per collection account. Under FDCPA §1692g(b).
+Demand: verification of the debt (amount, original creditor), complete chain of assignment, proof of legal right to collect, state license to collect in Texas, copy of any original signed agreement.
+State clearly: all collection activity including credit bureau reporting must cease until verification is provided. Failure to cease reporting an unvalidated debt violates FDCPA §1692e.
+Collections: ${collections.map(c=>c.creditor+(c.account_number?' ('+c.account_number+')':'')).join(', ')}
+===FDCPA_LETTER:[COLLECTION AGENCY NAME]===`:''}
+
+--- CFPB COMPLAINT ---
+One complaint covering all disputed accounts for this round. Format for CFPB online form at consumerfinance.gov/complaint.
+Structure: Company: [each bureau separately, one complaint per bureau]
+What happened: Factual narrative covering all disputed accounts — specific inaccuracies, cross-bureau conflicts, FCRA violations. 2-3 paragraphs. Professional but pointed.
+What you want: Deletion of all disputed items that cannot be fully verified. Removal of incorrect personal information.
+Supporting details: Dispute letters sent via certified mail ${dateStr}.
+===CFPB_COMPLAINT:[BUREAU NAME]===
+
+--- FTC REPORT ---
+One brief report for the full round. For reportfraud.ftc.gov.
+Brief factual narrative — which bureaus, which accounts (cite each by name and account number), what specific violations (cross-bureau inconsistency, unverifiable data, furnisher inaccuracy). Reference FCRA §1681e(b) and §1681s-2. Keep under 300 words. Direct and factual.
+===FTC_REPORT===
+
+--- TEXAS AG COMPLAINT ---
+One complaint. For texasattorneygeneral.gov/consumer-protection.
+Frame under Texas Finance Code Chapter 392 and DTPA (Deceptive Trade Practices Act) in addition to federal FCRA.
+Same accounts as above. Request state investigation and regulatory action.
+===TEXAS_AG===
+
+--- MAIL LOG ---
+Formatted plain-text table listing every document to be mailed with recipient name, full mailing address, and blank tracking number column.
+Include all bureau letters, furnisher letters, FDCPA letters.
+Add section for online filings (CFPB, FTC, Texas AG).
+30-day deadline: ${new Date(Date.now()+30*864e5).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+35-day follow-up: ${new Date(Date.now()+35*864e5).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}
+===MAIL_LOG===
+
+Write every section completely. Ready to use today.`;
+
+  try {
+    let result;
+    if(PROVIDER==='claude'){
+      result = await callClaudeText(key, prompt);
+    } else {
+      result = await callOpenAIText(key, prompt);
+    }
+
+    GENERATED_DOCS = parseDocs(result);
+
+    // Save to Supabase
+    if(SB_URL && ACTIVE_CLIENT){
+      const rndRow = await sb('POST','dispute_rounds',{
+        client_id: ACTIVE_CLIENT.id,
+        round_number: parseInt(round),
+        dispute_date: new Date().toISOString().split('T')[0],
+        ai_provider: PROVIDER,
+        accounts_disputed: disputed.length,
+        docs_generated: Object.keys(GENERATED_DOCS).length,
+        status: 'pending'
+      });
+      const rndId = rndRow?.[0]?.id;
+      if(rndId){
+        // Save each document
+        for(const [key2, doc] of Object.entries(GENERATED_DOCS)){
+          await sb('POST','dispute_documents',{
+            client_id: ACTIVE_CLIENT.id,
+            round_id: rndId,
+            doc_type: doc.type,
+            recipient: doc.label||doc.type,
+            content: doc.body
+          });
+        }
+        // Save disputed accounts
+        for(const a of disputed){
+          await sb('POST','dispute_accounts',{
+            client_id: ACTIVE_CLIENT.id,
+            round_id: rndId,
+            creditor: a.creditor,
+            account_number: a.account_number||'',
+            account_type: a.account_type,
+            bureaus_reporting: a.bureaus_reporting||[],
+            violations: a.violations||[],
+            violation_detail: a.violation_detail||'',
+            dispute_reason: a.violations?.join(', ')||''
+          });
+        }
+      }
+    }
+
+    renderOutput(result);
+    document.getElementById('s3').style.display='none';
+    document.getElementById('s4').style.display='block';
+    markStep(4);
+    document.getElementById('out-title').textContent = `${ACTIVE_CLIENT?.name||'Client'} — Round ${round} Package`;
+    document.getElementById('out-sub').textContent = `${Object.keys(GENERATED_DOCS).length} documents generated · ${new Date().toLocaleDateString()} · via ${PROVIDER==='claude'?'Claude':'GPT-4o'}`;
+
+  } catch(e) {
+    document.getElementById('s3').style.display='none';
+    document.getElementById('s2').style.display='block';
+    markStep(2);
+    document.getElementById('accts-review').insertAdjacentHTML('beforebegin',`<div class="al ad" style="margin-bottom:12px">Error generating package: ${e.message}</div>`);
+  }
+}
+
+async function callClaudeText(key, prompt){
+  const resp = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-calls':'true'
+    },
+    body: JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:8000,
+      messages:[{ role:'user', content:prompt }]
+    })
+  });
+  const d = await resp.json();
+  if(d.error) throw new Error(d.error.message);
+  return d.content?.filter(c=>c.type==='text').map(c=>c.text).join('')||'';
+}
+
+async function callOpenAIText(key, prompt){
+  const resp = await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${key}` },
+    body: JSON.stringify({
+      model:'gpt-4o',
+      max_tokens:8000,
+      messages:[{ role:'user', content:prompt }]
+    })
+  });
+  const d = await resp.json();
+  if(d.error) throw new Error(d.error.message);
+  return d.choices?.[0]?.message?.content||'';
+}
+
+function parseDocs(text){
+  const docs = {};
+  const delims = ['BUREAU_LETTER','FURNISHER_LETTER','FDCPA_LETTER','CFPB_COMPLAINT','FTC_REPORT','TEXAS_AG','MAIL_LOG'];
+  const pattern = new RegExp(`===(${delims.join('|')}):?([^=\\n]*)===`, 'g');
+  const parts = text.split(/(?====(?:BUREAU_LETTER|FURNISHER_LETTER|FDCPA_LETTER|CFPB_COMPLAINT|FTC_REPORT|TEXAS_AG|MAIL_LOG))/);
+  parts.forEach(part=>{
+    const m = part.match(/===([A-Z_]+):?([^=\n]*)===\n?([\s\S]*)/);
+    if(m){
+      const type=m[1].trim(), label=m[2].trim(), body=m[3].trim();
+      const k = label?`${type}:${label}`:type;
+      docs[k] = { type, label, body };
+    }
+  });
+  return docs;
+}
+
+// ================================================================
+// RENDER OUTPUT
+// ================================================================
+function renderOutput(rawText){
+  const typeLabels = { BUREAU_LETTER:'Bureau letter', FURNISHER_LETTER:'Furnisher letter', FDCPA_LETTER:'FDCPA validation', CFPB_COMPLAINT:'CFPB complaint', FTC_REPORT:'FTC report', TEXAS_AG:'Texas AG complaint', MAIL_LOG:'Mail log' };
+  const typeBadge = { BUREAU_LETTER:'bg', FURNISHER_LETTER:'bb', FDCPA_LETTER:'bp', CFPB_COMPLAINT:'br', FTC_REPORT:'bz', TEXAS_AG:'bgr', MAIL_LOG:'bgr' };
+  const sectionOrder = ['BUREAU_LETTER','FURNISHER_LETTER','FDCPA_LETTER','CFPB_COMPLAINT','FTC_REPORT','TEXAS_AG','MAIL_LOG'];
+  const sectionTitles = { BUREAU_LETTER:'Bureau dispute letters — Send certified mail', FURNISHER_LETTER:'Furnisher direct letters — Send certified mail', FDCPA_LETTER:'FDCPA debt validation letters — Send certified mail', CFPB_COMPLAINT:'CFPB complaints — File at consumerfinance.gov/complaint', FTC_REPORT:'FTC report — File at reportfraud.ftc.gov', TEXAS_AG:'Texas AG complaint — File at texasattorneygeneral.gov/consumer-protection', MAIL_LOG:'Mail log — Fill in tracking numbers after mailing' };
+
+  // Group by type
+  const groups = {};
+  Object.entries(GENERATED_DOCS).forEach(([k,d])=>{
+    if(!groups[d.type]) groups[d.type]=[];
+    groups[d.type].push({k,...d});
+  });
+
+  let html = '';
+  sectionOrder.filter(t=>groups[t]).forEach(t=>{
+    html += `<div class="doc-section">
+      <div class="doc-section-title">${sectionTitles[t]||t}</div>
+      ${groups[t].map(doc=>`
+        <div class="doc-card">
+          <div class="doc-head">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="doc-label">${doc.label||typeLabels[doc.type]||doc.type}</span>
+              <span class="badge ${typeBadge[doc.type]||'bz'}">${typeLabels[doc.type]||doc.type}</span>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-sm" onclick="copyDoc(this)">Copy</button>
+              <button class="btn btn-sm btn-g" onclick="printDoc(this)">Print</button>
+            </div>
+          </div>
+          <div class="doc-body">${esc(doc.body)}</div>
+        </div>`).join('')}
+    </div>`;
+  });
+
+  document.getElementById('output-body').innerHTML = html;
+}
+
+// ================================================================
+// OUTPUT ACTIONS
+// ================================================================
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function copyDoc(btn){
+  const body = btn.closest('.doc-card').querySelector('.doc-body');
+  navigator.clipboard.writeText(body.innerText).then(()=>{ btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy',2000); });
+}
+
+function printDoc(btn){
+  const body = btn.closest('.doc-card').querySelector('.doc-body').innerText;
+  const label = btn.closest('.doc-card').querySelector('.doc-label').textContent;
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>${label}</title><style>body{font-family:Georgia,serif;font-size:13px;line-height:1.9;margin:1in;color:#000}@media print{body{margin:.75in}}pre{font-family:inherit;white-space:pre-wrap}</style></head><body><pre>${body.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre></body></html>`);
+  w.document.close(); w.print();
+}
+
+function copyAll(){
+  const all = Array.from(document.querySelectorAll('.doc-body')).map(el=>el.innerText).join('\n\n'+'='.repeat(60)+'\n\n');
+  navigator.clipboard.writeText(all).then(()=>alert('All documents copied to clipboard'));
+}
+
+function printAll(){
+  const clientName = ACTIVE_CLIENT?.name||'Client';
+  const round = document.getElementById('round-sel')?.value||'1';
+  const sections = Array.from(document.querySelectorAll('.doc-card')).map(card=>{
+    const label = card.querySelector('.doc-label').textContent;
+    const body = card.querySelector('.doc-body').innerText;
+    return `${label}\n${'='.repeat(label.length)}\n\n${body}`;
+  }).join('\n\n'+'-'.repeat(60)+'\n\n');
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>${clientName} — Round ${round} Dispute Package</title><style>body{font-family:Georgia,serif;font-size:12.5px;line-height:1.9;margin:.75in;color:#000}@page{margin:.75in}pre{font-family:inherit;white-space:pre-wrap}h2{font-size:14px;font-family:Georgia,serif;margin-bottom:4px}hr{border:none;border-top:1px solid #ccc;margin:24px 0}</style></head><body><h2>${clientName} — Round ${round} Dispute Package — ${new Date().toLocaleDateString()}</h2><hr><pre>${sections.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre></body></html>`);
+  w.document.close(); w.print();
+}
+
+function downloadCase(){
+  const clientName = ACTIVE_CLIENT?.name||'Client';
+  const round = document.getElementById('round-sel')?.value||'1';
+  const date = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  const sections = Array.from(document.querySelectorAll('.doc-card')).map(card=>{
+    const label = card.querySelector('.doc-label').textContent;
+    const badge = card.querySelector('.badge').textContent;
+    const body = card.querySelector('.doc-body').innerText;
+    return `<div style="background:#1a1a1a;border:1px solid rgba(255,255,255,.1);border-radius:8px;margin-bottom:14px;overflow:hidden">
+      <div style="background:#222;padding:11px 16px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;font-weight:600;color:#f0ead6">${label}</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:10px;background:rgba(201,168,76,.2);color:#C9A84C;padding:2px 7px;border-radius:4px;font-weight:600">${badge}</span>
+          <button onclick="navigator.clipboard.writeText(this.closest('div[data-body]')?.getAttribute('data-body')||'')" style="padding:4px 10px;font-size:11px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#9a8f7a;border-radius:5px;cursor:pointer">Copy</button>
+        </div>
+      </div>
+      <div data-body="${body.replace(/"/g,'&quot;')}" style="padding:16px 18px;font-size:12.5px;line-height:1.88;color:#9a8f7a;white-space:pre-wrap;font-family:sans-serif">${body.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    </div>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${clientName} — Dispute Package</title><style>body{background:#0a0a0a;color:#f0ead6;font-family:sans-serif;padding:24px;max-width:900px;margin:0 auto}h1{font-size:20px;color:#C9A84C;margin-bottom:4px}p{font-size:13px;color:#9a8f7a;margin-bottom:24px}</style></head><body><h1>${clientName} — Round ${round} Dispute Package</h1><p>Generated ${date} · Send bureau letters via certified mail with return receipt · File CFPB/FTC/Texas AG online same day</p>${sections}<script>document.querySelectorAll('[data-body]').forEach(el=>{el.previousElementSibling.querySelector('button').addEventListener('click',()=>{navigator.clipboard.writeText(el.getAttribute('data-body').replace(/&quot;/g,'"'))});});<\/script></body></html>`;
+
+  const blob = new Blob([html],{type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${clientName.replace(/\s+/g,'-')}-Round${round}-${new Date().toISOString().split('T')[0]}.html`;
+  a.click();
+}
+
+// ================================================================
+// TRACKER
+// ================================================================
+async function loadTracker(){
+  const rows = await sb('GET','dispute_documents',null,'order=deadline_date.asc&limit=100');
+  if(rows) TRACKER_ROWS = rows;
+  renderTracker();
+}
+
+function openAddTracker(){
+  document.getElementById('add-tr-form').style.display='block';
+  document.getElementById('tr-s').value = new Date().toISOString().split('T')[0];
+  document.getElementById('tr-d').value = new Date(Date.now()+30*864e5).toISOString().split('T')[0];
+}
+
+async function saveTracker(){
+  const body = {
+    client_id: ACTIVE_CLIENT?.id||null,
+    doc_type: document.getElementById('tr-t').value,
+    recipient: document.getElementById('tr-e').value,
+    sent: true,
+    sent_date: document.getElementById('tr-s').value,
+    certified_mail_number: document.getElementById('tr-m').value,
+    deadline_date: document.getElementById('tr-d').value,
+    outcome: 'pending'
+  };
+  const r = await sb('POST','dispute_documents',body);
+  if(r){
+    document.getElementById('add-tr-form').style.display='none';
+    await loadTracker();
+  }
+}
+
+function renderTracker(){
+  const tbody = document.getElementById('tr-body');
+  if(!TRACKER_ROWS.length){ tbody.innerHTML='<tr><td colspan="6" class="emp" style="padding:20px">No entries yet. Letters are auto-logged when you generate a package.</td></tr>'; return; }
+  tbody.innerHTML = TRACKER_ROWS.map(t=>{
+    const ov = t.deadline_date && new Date(t.deadline_date)<new Date() && (t.outcome==='pending'||t.outcome==='sent'||!t.outcome);
+    const status = t.outcome||'pending';
+    return`<tr style="${ov?'background:var(--rbg)':''}">
+      <td>${t.recipient||'—'}</td>
+      <td style="font-size:11px">${t.doc_type||'—'}</td>
+      <td style="font-size:11px">${t.sent_date||'—'}</td>
+      <td style="color:${ov?'var(--red)':'inherit'};font-weight:${ov?'600':'400'};font-size:11px">${t.deadline_date||'—'}${ov?' ⚠':''}</td>
+      <td><span class="badge ${status==='resolved'?'bgr':ov?'br':'bz'}">${ov&&status!=='resolved'?'OVERDUE':status}</span></td>
+      <td><select style="font-size:10px;padding:2px 5px;background:var(--bg3);border:1px solid var(--bd);color:var(--tx);border-radius:4px" onchange="updOutcome('${t.id}',this.value)">
+        <option value="pending" ${status==='pending'?'selected':''}>Pending</option>
+        <option value="sent" ${status==='sent'?'selected':''}>Sent</option>
+        <option value="responded" ${status==='responded'?'selected':''}>Responded</option>
+        <option value="resolved" ${status==='resolved'?'selected':''}>Resolved</option>
+        <option value="escalated" ${status==='escalated'?'selected':''}>Escalated</option>
+      </select></td>
+    </tr>`;
+  }).join('');
+}
+
+async function updOutcome(id, outcome){
+  await sb('PATCH','dispute_documents',{outcome},`id=eq.${id}`);
+  await loadTracker();
+}
+
+// ================================================================
+// STEPS UI
+// ================================================================
+function goStep(n){
+  ['s1','s2','s3','s4'].forEach((id,i)=>{ document.getElementById(id).style.display = i+1===n?'block':'none'; });
+  markStep(n);
+  // Reset upload state if going back to step 1
+  if(n===1){
+    UPLOADED_FILES=[]; EXTRACTED_ACCOUNTS=[]; GENERATED_DOCS={};
+    renderFilePills();
+    document.getElementById('upload-zone').classList.remove('has-files');
+    document.getElementById('upload-title').textContent='Click to upload or drag & drop';
+    document.getElementById('extract-btn').disabled=true;
+    document.getElementById('file-input').value='';
+  }
+}
+
+function goStep2(){ document.getElementById('s1').style.display='none'; document.getElementById('s2').style.display='block'; markStep(2); }
+
+function markStep(n){
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById('st'+i);
+    el.classList.remove('on','done');
+    if(i===n) el.classList.add('on');
+    else if(i<n) el.classList.add('done');
+  }
+}
+
+// ================================================================
+// UTILS
+// ================================================================
+function ini(n){ if(!n) return '?'; return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase(); }
+
+// ================================================================
+// INIT
+// ================================================================
+// Pre-fill settings if saved
+if(SB_URL) document.getElementById('s-url').value = SB_URL;
+if(SB_KEY) document.getElementById('s-key').value = SB_KEY;
+if(ANT_KEY) document.getElementById('s-ak').value = ANT_KEY;
+if(OAI_KEY) document.getElementById('s-ok').value = OAI_KEY;
+
+// Set provider UI
+setProv(PROVIDER);
+
+// Show setup if not configured
+if(!SB_URL || !SB_KEY || (!ANT_KEY && !OAI_KEY)){
+  setTimeout(()=>openModal('setup-mo'), 300);
+} else {
+  testConn().then(ok=>{ if(ok){ loadClients(); loadTracker(); } });
+}
+
+// Inject nav tabs into each main view's wrap div
+document.querySelectorAll('.view').forEach(v=>{
+  const wrap = v.querySelector('.wrap');
+  if(!wrap) return;
+  const nav = document.createElement('div');
+  nav.className = 'nav-tabs';
+  const id = v.id.replace('v-','');
+  nav.innerHTML = `
+    <button class="nt ${id==='pipe'?'on':''}" onclick="showView('pipe')">Pipeline</button>
+    <button class="nt ${id==='clients'?'on':''}" onclick="showView('clients')">Clients</button>
+    <button class="nt ${id==='tracker'?'on':''}" onclick="showView('tracker')">Tracker</button>
+  `;
+  wrap.insertBefore(nav, wrap.firstChild);
+});
+</script>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="bnav">
+  <div class="bnav-inner">
+    <button class="bni on" id="bn-pipe" onclick="showView('pipe')"><span class="bni-i">✉</span>Pipeline</button>
+    <button class="bni" id="bn-clients" onclick="showView('clients')"><span class="bni-i">👤</span>Clients</button>
+    <button class="bni" id="bn-tracker" onclick="showView('tracker')"><span class="bni-i">📋</span>Tracker</button>
+  </div>
+</div>
+</body>
+</html>
